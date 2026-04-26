@@ -114,6 +114,23 @@ async def seed_mlas():
     return {"seeded": seeded, "total_in_db": count}
 
 
+@app.post("/admin/verify-all-mlas")
+async def verify_all_mlas():
+    """One-shot: stamps all MLAs on Solana devnet and stores chain_state records."""
+    from services.solana_service import verify_profile_on_chain
+    db = get_db()
+    mlas = await db.mlas.find({}).to_list(None)
+    results = []
+    for mla in mlas:
+        try:
+            result = await verify_profile_on_chain(mla["_id"], mla, db)
+            results.append({"mla_id": mla["_id"], "name": mla["name"], "tx": result.get("tx_signature")})
+        except Exception as exc:
+            results.append({"mla_id": mla["_id"], "name": mla["name"], "error": str(exc)})
+    count = await db.chain_state.count_documents({})
+    return {"verified": results, "chain_state_total": count}
+
+
 # --------------------------------------------------------------------- MLAs
 
 @app.get("/mla/{mla_id}")
