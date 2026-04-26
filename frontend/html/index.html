@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoteWise — Belfast Political Accountability</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:    #080e1a;
+      --card-bg: rgba(11,20,38,0.82);
+      --border:  rgba(180,207,232,0.11);
+      --accent:  #e8962a;
+      --glow:    #b4cfe8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--dark);
+      color: #cddcec;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--glow), var(--accent));
+      background-size: 200% 100%;
+      animation: shimmerBar 3s linear infinite;
+      z-index: 200;
+      pointer-events: none;
+    }
+    @keyframes shimmerBar {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Fixed hero ── */
+    #fixed-hero {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100vh;
+      z-index: 100;
+      overflow: hidden;
+    }
+    #hero-img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      display: block;
+      transform-origin: center;
+      will-change: transform;
+    }
+    #hero-tint {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.62);
+      pointer-events: none;
+    }
+    #hero-black {
+      position: absolute; inset: 0;
+      background: var(--dark);
+      opacity: 0; pointer-events: none;
+    }
+    #hero-content {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 2rem;
+      pointer-events: none;
+    }
+    #hero-content h1 {
+      font-size: clamp(2.8rem, 7vw, 5.8rem);
+      font-weight: 900; letter-spacing: -0.03em;
+      color: var(--glow);
+      animation: titleEntrance 1.2s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+      text-shadow:
+        0 0 100px rgba(180,207,232,0.65),
+        0 0 40px  rgba(180,207,232,0.35),
+        0 3px 0   rgba(0,0,0,1),
+        0 6px 20px rgba(0,0,0,1),
+        0 12px 40px rgba(0,0,0,0.85);
+    }
+    @keyframes titleEntrance {
+      from { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+      to   { opacity: 1; transform: scale(1);    filter: blur(0);   }
+    }
+    #hero-content h1 span {
+      color: var(--accent);
+      /* Set amber shadow immediately so the inherited blue-white h1 shadow never shows */
+      text-shadow: 0 0 40px rgba(232,150,42,0.55), 0 3px 0 rgba(0,0,0,1), 0 6px 20px rgba(0,0,0,1);
+      animation: amberPulse 4s ease-in-out 1.5s infinite both;
+    }
+    @keyframes amberPulse {
+      0%,100% { text-shadow: 0 0 40px rgba(232,150,42,0.55), 0 3px 0 rgba(0,0,0,1), 0 6px 20px rgba(0,0,0,1); }
+      50%     { text-shadow: 0 0 90px rgba(232,150,42,0.9),  0 0 20px rgba(232,150,42,0.45), 0 3px 0 rgba(0,0,0,1), 0 6px 20px rgba(0,0,0,1); }
+    }
+    .hero-divider {
+      width: 48px; height: 2px; margin: 1.3rem auto;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      border-radius: 2px;
+      animation: titleEntrance 1s ease 0.55s both;
+    }
+    #hero-content p {
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      color: rgba(215,228,242,0.85); max-width: 520px; line-height: 1.65;
+      animation: titleEntrance 1s ease 0.7s both;
+      text-shadow: 0 2px 4px rgba(0,0,0,1), 0 4px 16px rgba(0,0,0,0.95);
+    }
+    .scroll-hint {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      color: rgba(180,207,232,0.5); font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase; pointer-events: none;
+      animation: hintEntrance 1s ease 2s both, bounce 2.4s ease-in-out 3s infinite;
+    }
+    @keyframes hintEntrance { from { opacity: 0; } to { opacity: 1; } }
+    .scroll-hint svg { width: 18px; height: 18px; }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(7px); }
+    }
+
+    /* ── Main content ── */
+    #main-content { position: relative; z-index: 1; margin-top: 150vh; }
+
+    /* ── Parties section ── */
+    #parties {
+      position: relative; overflow: hidden; max-height: 100vh;
+      background: url('../images/storm.jpg') center center / cover no-repeat;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding-top: 5rem;
+      opacity: 0;
+      transition: opacity 1s cubic-bezier(0.16,1,0.3,1);
+    }
+    #parties.revealed { opacity: 1; }
+
+    #parties-overlay {
+      position: absolute; inset: 0;
+      background: var(--dark); opacity: 0.88;
+      pointer-events: none; z-index: 0;
+    }
+
+    .parties-content {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 1400px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.3rem;
+    }
+
+    /* ── Section header ── */
+    .section-header {
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s;
+    }
+    .section-header.visible { opacity: 1; }
+    .section-header h2 {
+      font-size: clamp(1.4rem, 2.8vw, 2.2rem); font-weight: 700;
+      color: var(--glow); margin-bottom: 0.3rem;
+      text-shadow: 0 0 40px rgba(180,207,232,0.25), 0 2px 8px rgba(0,0,0,0.9);
+      transition: color 0.4s ease;
+    }
+    .section-header p { color: rgba(180,207,232,0.38); font-size: 0.9rem; }
+
+    /* ── Views container: party-arc and profiles-view share this space ── */
+    .views-container { position: relative; width: 100%; }
+
+    /* ── Party arc ──
+       Circle: R=280, center(700,340), container 1400×680.
+       Cards: 15% wide × 2:1 → 210×105px at max-width.
+       Adjacent pair distance = 2·280·sin(π/7) ≈ 243px > 210 — no overlap.
+       top-left = (center_x − 105, center_y − 52.5) as % of 1400 × 680.  ── */
+    .party-arc {
+      position: relative;
+      width: 100%; max-width: 1400px;
+      height: 680px;
+      margin: 0 auto;
+      transition: opacity 0.4s ease;
+    }
+    .party-arc.out { opacity: 0; pointer-events: none; }
+
+    /* 7 cards clockwise from 12 o'clock (360°/7 ≈ 51.4° steps) */
+    .arc-b  { left: 40.5%;  top:  1.1%; }  /* SF     12 o'clock */
+    .arc-l1 { left: 63%;  top: 15%; }  /* DUP     2 o'clock */
+    .arc-r1 { left: 68%;  top: 39%; }  /* Alli    4 o'clock */
+    .arc-l2 { left: 53%;  top: 63%; }  /* SDLP    5 o'clock */
+    .arc-r2 { left: 28%;  top: 63%; }  /* UUP     7 o'clock */
+    .arc-l3 { left: 13%;  top: 39%; }  /* TUV     8 o'clock */
+    .arc-r3 { left: 17%;  top: 15%; }  /* PBP    10 o'clock */
+
+    /* ── Shared card base (party + profile) ── */
+    .party-card,
+    .profile-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      position: relative; overflow: hidden;
+      cursor: pointer; opacity: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition:
+        border-color 0.35s ease,
+        box-shadow   0.35s ease,
+        transform    0.3s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: inset 0 1px 0 rgba(180,207,232,0.07);
+    }
+
+    /* ── Party card specifics ── */
+    .party-card {
+      /* Arc positioning */
+      position: absolute;
+      width: 20%;
+      aspect-ratio: 2 / 1;
+      /* Image background with dark overlay so text stays legible */
+      background-image:
+        linear-gradient(rgba(8,14,26,0.74), rgba(8,14,26,0.74)),
+        var(--party-img, none);
+      background-color: var(--card-bg);
+      background-size: cover;
+      background-position: center;
+      padding: 0.8rem 0.9rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .party-card.visible { animation: cardFade 0.9s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+    .party-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      border-color: var(--party-color, rgba(255,255,255,0.25));
+      box-shadow:
+        0 0 0 1px var(--party-color, transparent),
+        0 0 28px -4px var(--party-color, transparent),
+        0 16px 48px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(180,207,232,0.10);
+    }
+    .party-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: var(--party-color, #fff);
+      border-radius: 14px 14px 0 0; opacity: 0.85;
+      transition: height 0.3s, opacity 0.3s;
+    }
+    .party-card:hover::before { height: 4px; opacity: 1; }
+    .party-card::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(110deg, transparent 30%, rgba(180,207,232,0.06) 50%, transparent 70%);
+      background-size: 250% 100%; background-position: 150% 0;
+      transition: background-position 0.65s ease;
+    }
+    .party-card:hover::after { background-position: -150% 0; }
+
+    .party-abbr {
+      font-size: clamp(0.9rem, 1.6vw, 1.3rem); font-weight: 900; letter-spacing: -0.01em;
+      color: #fff;
+      transition: text-shadow 0.3s ease;
+    }
+    .party-card:hover .party-abbr { text-shadow: 0 0 22px var(--party-color, transparent); }
+    .party-name  { font-size: clamp(0.6rem, 1vw, 0.78rem); color: #fff; line-height: 1.25; }
+    .party-stance {
+      font-size: clamp(0.55rem, 0.85vw, 0.68rem); color: rgba(255,255,255,0.75);
+      border-top: 1px solid rgba(255,255,255,0.15); padding-top: 0.3rem; margin-top: 0.1rem;
+    }
+    .party-seats {
+      display: inline-block; font-size: clamp(0.5rem, 0.75vw, 0.62rem); font-weight: 600;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px; padding: 0.12rem 0.5rem;
+      color: #fff; margin-top: auto;
+    }
+
+    /* ── Profiles view ── */
+    .profiles-view {
+      display: none;
+      flex-direction: column; align-items: center; gap: 1rem;
+      width: 100%;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+    }
+    .profiles-view.active { opacity: 1; }
+
+    .profiles-nav {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; position: relative;
+    }
+
+    .back-btn {
+      position: absolute; left: 0;
+      display: flex; align-items: center; gap: 0.4rem;
+      background: transparent;
+      border: 1px solid rgba(180,207,232,0.18);
+      color: rgba(180,207,232,0.6);
+      padding: 0.38rem 0.9rem; border-radius: 20px;
+      cursor: pointer; font-size: 0.78rem; letter-spacing: 0.02em;
+      transition: border-color 0.25s, color 0.25s, background 0.25s;
+    }
+    .back-btn:hover {
+      border-color: var(--glow); color: var(--glow);
+      background: rgba(180,207,232,0.07);
+    }
+
+    .profiles-grid {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 0.8rem;
+      width: 100%; max-width: 960px;
+    }
+
+    /* ── Profile card specifics ── */
+    .profile-card {
+      flex: 0 1 175px;
+      padding: 1.4rem 1rem 1.1rem;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.6rem;
+      text-align: center;
+    }
+    .profile-card.visible { animation: cardFade 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+    .profile-card:hover {
+      transform: translateY(-5px) scale(1.03);
+      border-color: var(--party-color, rgba(255,255,255,0.25));
+      box-shadow:
+        0 0 0 1px var(--party-color, transparent),
+        0 0 28px -4px var(--party-color, transparent),
+        0 16px 48px rgba(0,0,0,0.6);
+    }
+    /* Accent stripe */
+    .profile-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: var(--party-color, #fff);
+      border-radius: 14px 14px 0 0; opacity: 0.85;
+      transition: height 0.3s, opacity 0.3s;
+    }
+    .profile-card:hover::before { height: 4px; opacity: 1; }
+    /* Shimmer sweep */
+    .profile-card::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(110deg, transparent 30%, rgba(180,207,232,0.06) 50%, transparent 70%);
+      background-size: 250% 100%; background-position: 150% 0;
+      transition: background-position 0.65s ease;
+    }
+    .profile-card:hover::after { background-position: -150% 0; }
+
+    .profile-avatar {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: rgba(180,207,232,0.07);
+      border: 2px solid var(--party-color, rgba(180,207,232,0.2));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--party-color, var(--glow));
+      transition: box-shadow 0.3s, border-color 0.3s;
+      flex-shrink: 0;
+    }
+    .profile-card:hover .profile-avatar {
+      box-shadow: 0 0 18px -2px var(--party-color, transparent);
+    }
+    .profile-avatar svg { opacity: 0.75; }
+
+    .profile-name {
+      font-size: 0.84rem; font-weight: 700;
+      color: rgba(215,228,242,0.9); line-height: 1.25;
+    }
+    .profile-role {
+      font-size: 0.71rem; color: rgba(180,207,232,0.38);
+      line-height: 1.35;
+    }
+
+    /* ── Shared animation ── */
+    @keyframes cardFade {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* Click highlight — scales up briefly, then fades with the container */
+    .party-card.clicked {
+      transform: scale(1.07) !important;
+      border-color: var(--party-color) !important;
+      box-shadow:
+        0 0 0 2px var(--party-color),
+        0 0 40px -4px var(--party-color),
+        0 20px 60px rgba(0,0,0,0.55) !important;
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="progress-bar"></div>
+
+  <div id="fixed-hero">
+    <img id="hero-img" src="../images/storm.jpg" alt="Stormont Parliament Buildings at night" />
+    <div id="hero-tint"></div>
+    <div id="hero-black"></div>
+    <div id="hero-content">
+      <h1>Vote<span>Wise</span></h1>
+      <div class="hero-divider"></div>
+      <p>Belfast's open record of who voted what, who owns what, and who donated to whom.</p>
+    </div>
+    <div class="scroll-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+      Scroll
+    </div>
+  </div>
+
+  <div id="main-content">
+    <section id="parties">
+      <div id="parties-overlay"></div>
+
+      <div class="parties-content">
+
+        <div class="section-header" id="section-header">
+          <h2 id="section-title">The Seven Parties</h2>
+          <p id="section-sub">Select a party to explore members, votes, and declared interests</p>
+        </div>
+
+        <div class="views-container">
+
+          <!-- View 1: Party arc — 1 bottom, 3 curving up each side -->
+          <div class="party-arc" id="party-rows">
+
+            <!-- Bottom centre: most popular -->
+            <div class="party-card arc-b"
+                 style="--party-color:#326760; --party-img:url('../images/1.png')"
+                 data-party="SF" data-delay="0">
+              <div class="party-abbr">SF</div>
+              <div class="party-name">Sinn Féin</div>
+              <div class="party-stance">Irish republicanism · Left-wing</div>
+              <span class="party-seats">27 seats</span>
+            </div>
+
+            <!-- Lower-left -->
+            <div class="party-card arc-l1"
+                 style="--party-color:#d4213d; --party-img:url('../images/2.png')"
+                 data-party="DUP" data-delay="1">
+              <div class="party-abbr">DUP</div>
+              <div class="party-name">Democratic Unionist Party</div>
+              <div class="party-stance">Ulster unionism · Conservative</div>
+              <span class="party-seats">25 seats</span>
+            </div>
+
+            <!-- Lower-right -->
+            <div class="party-card arc-r1"
+                 style="--party-color:#f5c842; --party-img:url('../images/3.png')"
+                 data-party="Alliance" data-delay="2">
+              <div class="party-abbr">Alliance</div>
+              <div class="party-name">Alliance Party of NI</div>
+              <div class="party-stance">Non-sectarian · Liberal</div>
+              <span class="party-seats">17 seats</span>
+            </div>
+
+            <!-- Mid-left -->
+            <div class="party-card arc-l2"
+                 style="--party-color:#2e9a41; --party-img:url('../images/4.png')"
+                 data-party="SDLP" data-delay="3">
+              <div class="party-abbr">SDLP</div>
+              <div class="party-name">Social Democratic &amp; Labour Party</div>
+              <div class="party-stance">Irish nationalism · Centre-left</div>
+              <span class="party-seats">12 seats</span>
+            </div>
+
+            <!-- Mid-right -->
+            <div class="party-card arc-r2"
+                 style="--party-color:#48a5dd; --party-img:url('../images/5.png')"
+                 data-party="UUP" data-delay="4">
+              <div class="party-abbr">UUP</div>
+              <div class="party-name">Ulster Unionist Party</div>
+              <div class="party-stance">Ulster unionism · Centre-right</div>
+              <span class="party-seats">9 seats</span>
+            </div>
+
+            <!-- Upper-left -->
+            <div class="party-card arc-l3"
+                 style="--party-color:#4a7ab5; --party-img:url('../images/6.png')"
+                 data-party="TUV" data-delay="5">
+              <div class="party-abbr">TUV</div>
+              <div class="party-name">Traditional Unionist Voice</div>
+              <div class="party-stance">Hard unionism · Eurosceptic</div>
+              <span class="party-seats">1 seat</span>
+            </div>
+
+            <!-- Upper-right -->
+            <div class="party-card arc-r3"
+                 style="--party-color:#c0392b; --party-img:url('../images/7.png')"
+                 data-party="PBP" data-delay="6">
+              <div class="party-abbr">PBP</div>
+              <div class="party-name">People Before Profit</div>
+              <div class="party-stance">Socialist · Anti-sectarian</div>
+              <span class="party-seats">1 seat</span>
+            </div>
+
+          </div><!-- #party-rows (arc) -->
+
+          <!-- View 2: Profile cards (injected by JS) -->
+          <div class="profiles-view" id="profiles-view">
+            <div class="profiles-nav">
+              <button class="back-btn" id="back-btn">&#8592; All Parties</button>
+            </div>
+            <div class="profiles-grid" id="profiles-grid"></div>
+          </div>
+
+        </div><!-- .views-container -->
+      </div><!-- .parties-content -->
+    </section>
+  </div>
+
+  <script>
+  /* ── Party member data ── */
+  const PARTIES = {
+    SF: {
+      label: 'Sinn Féin',
+      color: '#326760',
+      members: [
+        { name: "Michelle O'Neill", role: 'First Minister · MLA' },
+        { name: 'Conor Murphy', role: 'MLA · Former Finance Minister' },
+        { name: 'Caoimhe Archibald', role: 'Finance Minister · MLA' },
+        { name: "John O'Dowd", role: 'Education Minister · MLA' },
+        { name: 'Deirdre Hargey', role: 'MLA · Belfast' },
+      ]
+    },
+    DUP: {
+      label: 'Democratic Unionist Party',
+      color: '#d4213d',
+      members: [
+        { name: 'Gavin Robinson', role: 'Party Leader · MLA' },
+        { name: 'Emma Little-Pengelly', role: 'Deputy First Minister · MLA' },
+        { name: 'Edwin Poots', role: 'Agriculture Minister · MLA' },
+        { name: 'Sammy Wilson', role: 'MP for East Antrim' },
+        { name: 'Paul Frew', role: 'MLA · North Antrim' },
+      ]
+    },
+    Alliance: {
+      label: 'Alliance Party',
+      color: '#f5c842',
+      members: [
+        { name: 'Naomi Long', role: 'Party Leader · Justice Minister · MLA' },
+        { name: 'Stephen Farry', role: 'MP for North Down' },
+        { name: 'Paula Bradshaw', role: 'MLA · South Belfast' },
+        { name: 'John Blair', role: 'MLA · South Antrim' },
+      ]
+    },
+    SDLP: {
+      label: 'SDLP',
+      color: '#2e9a41',
+      members: [
+        { name: 'Colum Eastwood', role: 'Party Leader · MP' },
+        { name: 'Claire Hanna', role: 'MP · South Belfast' },
+        { name: "Matthew O'Toole", role: 'MLA · Opposition Leader' },
+        { name: 'Patsy McGlone', role: 'MLA · Mid Ulster' },
+      ]
+    },
+    UUP: {
+      label: 'UUP',
+      color: '#48a5dd',
+      members: [
+        { name: 'Doug Beattie', role: 'Party Leader · MLA' },
+        { name: 'Robin Swann', role: 'Health Minister · MLA' },
+        { name: 'Mike Nesbitt', role: 'MLA · Strangford' },
+        { name: 'Tom Elliott', role: 'MLA · Fermanagh & South Tyrone' },
+      ]
+    },
+    TUV: {
+      label: 'TUV',
+      color: '#4a7ab5',
+      members: [
+        { name: 'Jim Allister', role: 'Party Leader · MLA · KC' },
+      ]
+    },
+    PBP: {
+      label: 'PBP',
+      color: '#c0392b',
+      members: [
+        { name: 'Gerry Carroll', role: 'MLA · West Belfast' },
+      ]
+    },
+  };
+
+  const AVATAR_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26">
+    <path d="M12 12c2.67 0 8 1.34 8 4v2H4v-2c0-2.66 5.33-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+  </svg>`;
+
+  /* ── DOM ── */
+  const progressBar = document.getElementById('progress-bar');
+  const heroImg = document.getElementById('hero-img');
+  const heroBlack = document.getElementById('hero-black');
+  const heroContent = document.getElementById('hero-content');
+  const scrollHint = document.querySelector('.scroll-hint');
+
+  const partiesEl = document.getElementById('parties');
+  const sectionHeader = document.getElementById('section-header');
+  const sectionTitle = document.getElementById('section-title');
+  const sectionSub = document.getElementById('section-sub');
+
+  const partyRows = document.getElementById('party-rows');
+  const profilesView = document.getElementById('profiles-view');
+  const profilesGrid = document.getElementById('profiles-grid');
+  const backBtn = document.getElementById('back-btn');
+
+  /* ── FIX: global state lock ── */
+  let isViewingProfile = false;
+  let cardsRevealed = false;
+  let revealSession = 0;
+
+  /* ── Scroll ── */
+  function onScroll() {
+    if (isViewingProfile) return; // ✅ PREVENT RESET BUG
+
+    const scrolled = window.scrollY;
+    const vh = window.innerHeight;
+    const total = document.documentElement.scrollHeight - vh;
+
+    const heroRange = vh * 1.5;
+    const p = Math.min(scrolled / heroRange, 1);
+    const fadeP = Math.max(0, (p - 0.48) / 0.52);
+
+    progressBar.style.width = (scrolled / total * 100) + '%';
+
+    heroImg.style.transform = `scale(${1 + p * 0.5})`;
+    heroContent.style.opacity = Math.max(0, 1 - p / 0.38);
+    scrollHint.style.opacity = Math.max(0, 1 - p / 0.25);
+    heroBlack.style.opacity = fadeP;
+
+    if (fadeP >= 0.85 && !cardsRevealed) {
+      document.getElementById('fixed-hero').style.visibility = 'hidden';
+      partiesEl.classList.add('revealed');
+      sectionHeader.classList.add('visible');
+      revealPartyCards();
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ── reveal cards ── */
+  function revealPartyCards() {
+    cardsRevealed = true;
+    const session = ++revealSession;
+
+    document.querySelectorAll('.party-card').forEach((card, i) => {
+      setTimeout(() => {
+        if (session === revealSession) {
+          card.classList.add('visible');
+        }
+      }, 200 + i * 100);
+    });
+  }
+
+  /* ── click party ── */
+  document.querySelectorAll('.party-card').forEach(card => {
+    card.addEventListener('click', () => {
+
+      if (partyRows.classList.contains('out')) return;
+
+      isViewingProfile = true; // ✅ LOCK SCROLL
+
+      const key = card.dataset.party;
+      const party = PARTIES[key];
+      if (!party) return;
+
+      card.classList.add('clicked');
+
+      setTimeout(() => {
+        partyRows.classList.add('out');
+        showProfiles(key);
+      }, 130);
+    });
+  });
+
+  /* ── profiles ── */
+  function showProfiles(key) {
+    const party = PARTIES[key];
+    if (!party) return;
+
+    partyRows.style.display = 'none';
+
+    profilesGrid.innerHTML = '';
+
+    party.members.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'profile-card';
+      div.style.setProperty('--party-color', party.color);
+      div.innerHTML = `
+        <div class="profile-avatar">${AVATAR_SVG}</div>
+        <div class="profile-name">${m.name}</div>
+        <div class="profile-role">${m.role}</div>
+      `;
+      profilesGrid.appendChild(div);
+    });
+
+    profilesView.style.display = 'flex';
+
+    requestAnimationFrame(() => {
+      profilesView.classList.add('active');
+
+      setTimeout(() => {
+        document.querySelectorAll('.profile-card')
+          .forEach(c => c.classList.add('visible'));
+      }, 200);
+    });
+  }
+
+  /* ── back ── */
+  backBtn.addEventListener('click', () => {
+
+    isViewingProfile = false; // ✅ UNLOCK SCROLL
+
+    profilesView.classList.remove('active');
+
+    setTimeout(() => {
+      profilesView.style.display = 'none';
+
+      partyRows.style.display = '';
+      partyRows.classList.remove('out');
+
+      document.querySelectorAll('.party-card').forEach(c => {
+        c.classList.remove('clicked', 'visible');
+      });
+
+      cardsRevealed = false;
+
+      revealPartyCards();
+    }, 300);
+  });
+
+</script>
+
+</body>
+</html>
