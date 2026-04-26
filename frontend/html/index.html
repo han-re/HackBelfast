@@ -451,6 +451,129 @@
       font-size: 0.8rem; color: rgba(180,207,232,0.6); line-height: 1.65;
     }
 
+    /* ── On-chain badge on profile cards ── */
+    .chain-pill {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: rgba(16,185,129,0.1); color: #34d399;
+      border: 1px solid rgba(16,185,129,0.22); border-radius: 20px;
+      padding: 0.12rem 0.55rem; margin-top: 0.1rem;
+      display: inline-block;
+    }
+
+    /* ── Chain verification overlay ── */
+    .chain-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(5,10,20,0.88);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+      opacity: 0; transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .chain-overlay.open { opacity: 1; pointer-events: auto; }
+    .chain-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 2rem 2rem 1.6rem;
+      width: 100%; max-width: 520px;
+      max-height: 82vh; overflow-y: auto;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(180,207,232,0.08);
+      transform: translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .chain-overlay.open .chain-box { transform: translateY(0); }
+    .chain-close {
+      position: absolute; top: 1rem; right: 1.2rem;
+      background: none; border: none; cursor: pointer;
+      color: rgba(180,207,232,0.35); font-size: 1.5rem; line-height: 1;
+      transition: color 0.2s;
+    }
+    .chain-close:hover { color: var(--glow); }
+    .chain-modal-name {
+      font-size: 1.15rem; font-weight: 700; color: var(--glow); margin-bottom: 0.2rem;
+    }
+    .chain-modal-sub { font-size: 0.76rem; color: rgba(180,207,232,0.38); margin-bottom: 1.4rem; }
+    .chain-status-card { border-radius: 12px; padding: 1.1rem 1.2rem; margin-bottom: 1rem; }
+    .chain-status-card.cs-verified {
+      background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.22);
+    }
+    .chain-status-card.cs-fallback {
+      background: rgba(234,179,8,0.07); border: 1px solid rgba(234,179,8,0.22);
+    }
+    .chain-status-card.cs-empty {
+      background: rgba(180,207,232,0.03); border: 1px solid var(--border);
+    }
+    .chain-badge-row { display: flex; align-items: center; gap: 0.45rem; }
+    .chain-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .chain-dot.live {
+      background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+      animation: chainPulse 2s ease-in-out infinite;
+    }
+    .chain-dot.demo-dot { background: #eab308; }
+    @keyframes chainPulse {
+      0%,100% { box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+      50%      { box-shadow: 0 0 0 6px rgba(16,185,129,0.05); }
+    }
+    .chain-label { font-size: 0.8rem; font-weight: 600; }
+    .chain-label.lv { color: #34d399; }
+    .chain-label.ld { color: #facc15; }
+    .chain-label.le { color: rgba(180,207,232,0.45); }
+    .chain-meta { font-size: 0.72rem; color: rgba(180,207,232,0.3); margin-top: 0.25rem; }
+    .chain-field { margin-top: 0.8rem; }
+    .chain-field-label {
+      font-size: 0.66rem; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; color: rgba(180,207,232,0.3); margin-bottom: 0.28rem;
+    }
+    .chain-hash {
+      font-family: 'Courier New', monospace;
+      font-size: 0.68rem; color: rgba(180,207,232,0.5);
+      background: rgba(0,0,0,0.3); border: 1px solid rgba(180,207,232,0.07);
+      border-radius: 6px; padding: 0.4rem 0.6rem;
+      word-break: break-all; line-height: 1.5;
+    }
+    .chain-explorer {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.76rem; color: #60a5fa; text-decoration: none;
+      margin-top: 0.55rem; transition: color 0.2s;
+    }
+    .chain-explorer:hover { color: #93c5fd; text-decoration: underline; }
+    .chain-explorer svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .chain-actions { display: flex; gap: 0.65rem; margin-top: 1.2rem; flex-wrap: wrap; }
+    .chain-btn {
+      padding: 0.42rem 1rem; border-radius: 8px;
+      font-size: 0.78rem; font-weight: 600; cursor: pointer;
+      border: 1px solid rgba(180,207,232,0.18);
+      background: rgba(180,207,232,0.05); color: rgba(180,207,232,0.7);
+      transition: background 0.25s, border-color 0.25s, color 0.25s;
+    }
+    .chain-btn:hover:not(:disabled) {
+      background: rgba(180,207,232,0.1); border-color: var(--glow); color: var(--glow);
+    }
+    .chain-btn.cb-primary {
+      background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #34d399;
+    }
+    .chain-btn.cb-primary:hover:not(:disabled) {
+      background: rgba(16,185,129,0.18); border-color: #10b981;
+    }
+    .chain-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .chain-verify-result {
+      margin-top: 0.9rem; border-radius: 10px; padding: 0.8rem 1rem;
+      font-size: 0.76rem; line-height: 1.55;
+    }
+    .cvr-checking {
+      background: rgba(180,207,232,0.04); border: 1px solid var(--border);
+      color: rgba(180,207,232,0.4);
+    }
+    .cvr-match {
+      background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: #34d399;
+    }
+    .cvr-mismatch {
+      background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2); color: #f87171;
+    }
+    .cvr-small { font-size: 0.65rem; opacity: 0.65; margin-top: 0.35rem; word-break: break-all; }
+
     /* Click highlight — scales up briefly, then fades with the container */
     .party-card.clicked {
       transform: scale(1.07) !important;
@@ -587,6 +710,14 @@
   </div>
   <p style="font-size: 0.75rem; color: #666; margin: 1rem; align-items: centre;">© 2026 VoteWise</p>
 
+  <!-- Chain verification modal (populated by JS) -->
+  <div class="chain-overlay" id="chainOverlay">
+    <div class="chain-box">
+      <button class="chain-close" id="chainClose" aria-label="Close">&#x2715;</button>
+      <div id="chainContent"></div>
+    </div>
+  </div>
+
   <script>
   /* ── Party member data ── */
   const PARTIES = {
@@ -594,7 +725,7 @@
       label: 'Sinn Féin',
       color: '#326760',
       members: [
-        { name: "Michelle O'Neill", role: 'First Minister · MLA' },
+        { name: "Michelle O'Neill", role: 'First Minister · MLA', polId: 'pol_001' },
         { name: 'Conor Murphy', role: 'MLA · Former Finance Minister' },
         { name: 'Caoimhe Archibald', role: 'Finance Minister · MLA' },
         { name: "John O'Dowd", role: 'Education Minister · MLA' },
@@ -673,7 +804,7 @@
       label: 'Democratic Unionist Party',
       color: '#d4213d',
       members: [
-        { name: 'Gavin Robinson', role: 'Party Leader · MLA' },
+        { name: 'Gavin Robinson', role: 'Party Leader · MLA', polId: 'pol_002' },
         { name: 'Emma Little-Pengelly', role: 'Deputy First Minister · MLA' },
         { name: 'Edwin Poots', role: 'Agriculture Minister · MLA' },
         { name: 'Sammy Wilson', role: 'MP for East Antrim' },
@@ -755,7 +886,7 @@
       label: 'Alliance Party',
       color: '#f5c842',
       members: [
-        { name: 'Naomi Long', role: 'Party Leader · Justice Minister · MLA' },
+        { name: 'Naomi Long', role: 'Party Leader · Justice Minister · MLA', polId: 'pol_003' },
         { name: 'Stephen Farry', role: 'MP for North Down' },
         { name: 'Paula Bradshaw', role: 'MLA · South Belfast' },
         { name: 'John Blair', role: 'MLA · South Antrim' },
@@ -1287,7 +1418,12 @@
         <div class="profile-avatar">${AVATAR_SVG}</div>
         <div class="profile-name">${m.name}</div>
         <div class="profile-role">${m.role}</div>
+        ${m.polId ? '<div class="chain-pill">&#x26AC; On-chain</div>' : ''}
       `;
+      if (m.polId) {
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => openChainModal(m.name, m.role, m.polId));
+      }
       profilesGrid.appendChild(div);
     });
 
@@ -1408,6 +1544,124 @@
       lastTouchY = e.touches[0].clientY;
     }
   }, { passive: false });
+
+  /* ── Chain verification ── */
+  const CHAIN_API = 'http://localhost:8000';
+  let _chainPolId = null;
+  let _chainState = null;
+
+  // Ported from ChainPanel.tsx — must match Python's json.dumps(sort_keys=True, separators=(',',':'))
+  function sortKeysDeep(val) {
+    if (Array.isArray(val)) return val.map(sortKeysDeep);
+    if (val !== null && typeof val === 'object') {
+      return Object.keys(val).sort().reduce((acc, key) => {
+        acc[key] = sortKeysDeep(val[key]);
+        return acc;
+      }, {});
+    }
+    return val;
+  }
+  async function sha256hex(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  async function hashProfile(data) {
+    return sha256hex(JSON.stringify(sortKeysDeep(data)));
+  }
+
+  function renderChainCard(state, networkError) {
+    const card = document.getElementById('_chainCard');
+    const verifyBtn = document.getElementById('_verifyBtn');
+    if (!card) return;
+    if (!state) {
+      card.className = 'chain-status-card cs-empty';
+      card.innerHTML = `
+        <div class="chain-badge-row">
+          <span class="chain-label le">${networkError ? '&#9888; Cannot reach backend' : 'Not yet verified on-chain'}</span>
+        </div>
+        <p class="chain-meta" style="margin-top:0.4rem">Click "Stamp on-chain" to record this profile on Solana devnet.</p>`;
+      if (verifyBtn) verifyBtn.disabled = true;
+      return;
+    }
+    const isLive = !state.fallback;
+    const d = new Date(state.verified_at).toLocaleString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    card.className = `chain-status-card ${isLive ? 'cs-verified' : 'cs-fallback'}`;
+    card.innerHTML = `
+      <div class="chain-badge-row">
+        <span class="chain-dot ${isLive ? 'live' : 'demo-dot'}"></span>
+        <span class="chain-label ${isLive ? 'lv' : 'ld'}">${isLive ? 'Blockchain Verified' : 'Verified (demo mode)'}</span>
+      </div>
+      <p class="chain-meta">Stamped ${d} &middot; Solana ${state.network}</p>
+      <div class="chain-field">
+        <div class="chain-field-label">Profile fingerprint</div>
+        <div class="chain-hash">${state.profile_hash}</div>
+      </div>
+      <div class="chain-field">
+        <div class="chain-field-label">Transaction</div>
+        <div class="chain-hash">${state.tx_signature}</div>
+      </div>
+      <a class="chain-explorer" href="${state.explorer_url}" target="_blank" rel="noopener noreferrer">
+        View on Solana Explorer
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+      </a>`;
+    if (verifyBtn) verifyBtn.disabled = false;
+  }
+
+  async function openChainModal(name, role, polId) {
+    _chainPolId = polId;
+    _chainState = null;
+    document.getElementById('chainContent').innerHTML = `
+      <div class="chain-modal-name">${name}</div>
+      <div class="chain-modal-sub">${role} &middot; Blockchain Accountability</div>
+      <div class="chain-status-card cs-empty" id="_chainCard">
+        <span class="chain-label le">Loading chain data&hellip;</span>
+      </div>
+      <div class="chain-actions">
+        <button class="chain-btn" id="_verifyBtn" onclick="verifyIntegrity()" disabled>Verify integrity</button>
+      </div>
+      <div id="_chainVerifyResult"></div>`;
+    const overlay = document.getElementById('chainOverlay');
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => overlay.classList.add('open'));
+    try {
+      const r = await fetch(`${CHAIN_API}/politician/${polId}/chain`);
+      if (r.ok) { _chainState = await r.json(); renderChainCard(_chainState, false); }
+      else renderChainCard(null, false);
+    } catch { renderChainCard(null, true); }
+  }
+
+  async function verifyIntegrity() {
+    if (!_chainState) return;
+    const btn = document.getElementById('_verifyBtn');
+    const res = document.getElementById('_chainVerifyResult');
+    btn.disabled = true; btn.textContent = 'Verifying…';
+    res.innerHTML = '<div class="chain-verify-result cvr-checking">Fetching profile and computing fingerprint…</div>';
+    try {
+      const r = await fetch(`${CHAIN_API}/politician/${_chainPolId}`);
+      if (!r.ok) throw new Error();
+      const profile = await r.json();
+      const computed = await hashProfile(profile);
+      const match = computed === _chainState.profile_hash;
+      res.innerHTML = match
+        ? `<div class="chain-verify-result cvr-match">&#10003; Data matches blockchain record — profile is unaltered.<div class="cvr-small">${computed}</div></div>`
+        : `<div class="chain-verify-result cvr-mismatch">&#9888; Fingerprint mismatch — profile changed since last stamp.<div class="cvr-small">Live: ${computed}<br>On-chain: ${_chainState.profile_hash}</div></div>`;
+    } catch {
+      res.innerHTML = '<div class="chain-verify-result cvr-mismatch">Could not fetch profile data.</div>';
+    }
+    btn.disabled = false; btn.textContent = 'Verify integrity';
+  }
+
+  document.getElementById('chainClose').addEventListener('click', () => {
+    const ov = document.getElementById('chainOverlay');
+    ov.classList.remove('open');
+    setTimeout(() => { ov.style.display = 'none'; }, 310);
+  });
+  document.getElementById('chainOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) {
+      e.currentTarget.classList.remove('open');
+      setTimeout(() => { e.currentTarget.style.display = 'none'; }, 310);
+    }
+  });
 
   /* ── back ── */
   backBtn.addEventListener('click', () => {
