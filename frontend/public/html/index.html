@@ -344,18 +344,39 @@
     .profile-card:hover::after { background-position: -150% 0; }
 
     .profile-avatar {
-      width: 58px; height: 58px; border-radius: 50%;
+      width: 72px; height: 72px; border-radius: 50%;
       background: rgba(180,207,232,0.07);
       border: 2px solid var(--party-color, rgba(180,207,232,0.2));
       display: flex; align-items: center; justify-content: center;
       color: var(--party-color, var(--glow));
       transition: box-shadow 0.3s, border-color 0.3s;
-      flex-shrink: 0;
+      flex-shrink: 0; overflow: hidden;
     }
     .profile-card:hover .profile-avatar {
-      box-shadow: 0 0 18px -2px var(--party-color, transparent);
+      box-shadow: 0 0 22px -2px var(--party-color, transparent);
+      border-color: var(--party-color);
     }
+    .profile-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover; border-radius: 50%;
+      transition: transform 0.35s ease;
+    }
+    .profile-card:hover .profile-avatar img { transform: scale(1.08); }
     .profile-avatar svg { opacity: 0.75; }
+
+    .profile-card { cursor: pointer; }
+    .profile-card.clicked {
+      transform: scale(1.06) !important;
+      border-color: var(--party-color) !important;
+      box-shadow: 0 0 0 2px var(--party-color), 0 0 32px -4px var(--party-color) !important;
+    }
+    .profile-link-hint {
+      font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--party-color); opacity: 0;
+      transition: opacity 0.2s;
+      margin-top: 0.1rem;
+    }
+    .profile-card:hover .profile-link-hint { opacity: 0.8; }
 
     .profile-name {
       font-size: 0.84rem; font-weight: 700;
@@ -623,11 +644,11 @@
       label: 'Sinn Féin',
       color: '#326760',
       members: [
-        { name: "Michelle O'Neill", role: 'First Minister · MLA' },
-        { name: 'Conor Murphy', role: 'MLA · Former Finance Minister' },
+        { id: 'mla_michelle_oneill', name: "Michelle O'Neill",  role: 'First Minister · MLA',          photo: 'https://ui-avatars.com/api/?name=Michelle+ONeill&background=326760&color=fff&size=128&bold=true' },
+        { id: 'mla_conor_murphy',    name: 'Conor Murphy',      role: 'MLA · Former Finance Minister', photo: 'https://ui-avatars.com/api/?name=Conor+Murphy&background=326760&color=fff&size=128&bold=true' },
         { name: 'Caoimhe Archibald', role: 'Finance Minister · MLA' },
-        { name: "John O'Dowd", role: 'Education Minister · MLA' },
-        { name: 'Deirdre Hargey', role: 'MLA · Belfast' },
+        { name: "John O'Dowd",       role: 'Education Minister · MLA' },
+        { name: 'Deirdre Hargey',    role: 'MLA · Belfast' },
       ],
       manifesto: {
         title: '2022 Manifesto vs Delivery (2022–2026)',
@@ -702,11 +723,11 @@
       label: 'Democratic Unionist Party',
       color: '#d4213d',
       members: [
-        { name: 'Gavin Robinson', role: 'Party Leader · MLA' },
+        { id: 'mla_gavin_robinson', name: 'Gavin Robinson',        role: 'Party Leader · MLA',          photo: 'https://ui-avatars.com/api/?name=Gavin+Robinson&background=d4213d&color=fff&size=128&bold=true' },
+        { id: 'mla_paul_givan',     name: 'Paul Givan',            role: 'Former First Minister · MLA', photo: 'https://ui-avatars.com/api/?name=Paul+Givan&background=d4213d&color=fff&size=128&bold=true' },
         { name: 'Emma Little-Pengelly', role: 'Deputy First Minister · MLA' },
-        { name: 'Edwin Poots', role: 'Agriculture Minister · MLA' },
-        { name: 'Sammy Wilson', role: 'MP for East Antrim' },
-        { name: 'Paul Frew', role: 'MLA · North Antrim' },
+        { name: 'Sammy Wilson',         role: 'MP for East Antrim' },
+        { name: 'Paul Frew',            role: 'MLA · North Antrim' },
       ],
       manifesto: {
         title: '"Putting Unionism First" — Promises Tracker (2022–2026)',
@@ -784,10 +805,11 @@
       label: 'Alliance Party',
       color: '#f5c842',
       members: [
-        { name: 'Naomi Long', role: 'Party Leader · Justice Minister · MLA' },
+        { id: 'mla_naomi_long',  name: 'Naomi Long',      role: 'Party Leader · Justice Minister · MLA', photo: 'https://ui-avatars.com/api/?name=Naomi+Long&background=f5c842&color=0a0a0a&size=128&bold=true' },
+        { id: 'mla_andrew_muir', name: 'Andrew Muir',     role: 'Infrastructure Minister · MLA',         photo: 'https://ui-avatars.com/api/?name=Andrew+Muir&background=f5c842&color=0a0a0a&size=128&bold=true' },
         { name: 'Stephen Farry', role: 'MP for North Down' },
         { name: 'Paula Bradshaw', role: 'MLA · South Belfast' },
-        { name: 'John Blair', role: 'MLA · South Antrim' },
+        { name: 'John Blair',    role: 'MLA · South Antrim' },
       ],
       manifesto: {
         title: '"Shared Future, Practical Politics" — Promises Tracker (2022–2026)',
@@ -875,10 +897,11 @@
       label: 'SDLP',
       color: '#2e9a41',
       members: [
+        { id: 'mla_matthew_otoole', name: "Matthew O'Toole", role: 'MLA · Opposition Leader',  photo: 'https://ui-avatars.com/api/?name=Matthew+OToole&background=2e9a41&color=fff&size=128&bold=true' },
+        { id: 'mla_colin_mcgrath',  name: 'Colin McGrath',   role: 'MLA · South Down',         photo: 'https://ui-avatars.com/api/?name=Colin+McGrath&background=2e9a41&color=fff&size=128&bold=true' },
         { name: 'Colum Eastwood', role: 'Party Leader · MP' },
-        { name: 'Claire Hanna', role: 'MP · South Belfast' },
-        { name: "Matthew O'Toole", role: 'MLA · Opposition Leader' },
-        { name: 'Patsy McGlone', role: 'MLA · Mid Ulster' },
+        { name: 'Claire Hanna',   role: 'MP · South Belfast' },
+        { name: 'Patsy McGlone',  role: 'MLA · Mid Ulster' },
       ],
       manifesto: {
         title: '2022 Manifesto vs Delivery (2022–2026)',
@@ -942,10 +965,11 @@
       label: 'UUP',
       color: '#48a5dd',
       members: [
-        { name: 'Doug Beattie', role: 'Party Leader · MLA' },
-        { name: 'Robin Swann', role: 'Health Minister · MLA' },
+        { id: 'mla_doug_beattie',   name: 'Doug Beattie',  role: 'Party Leader · MLA',                   photo: 'https://ui-avatars.com/api/?name=Doug+Beattie&background=48a5dd&color=fff&size=128&bold=true' },
+        { id: 'mla_robbie_butler',  name: 'Robbie Butler', role: 'MLA · Lagan Valley',                   photo: 'https://ui-avatars.com/api/?name=Robbie+Butler&background=48a5dd&color=fff&size=128&bold=true' },
+        { name: 'Robin Swann',  role: 'Health Minister · MLA' },
         { name: 'Mike Nesbitt', role: 'MLA · Strangford' },
-        { name: 'Tom Elliott', role: 'MLA · Fermanagh & South Tyrone' },
+        { name: 'Tom Elliott',  role: 'MLA · Fermanagh & South Tyrone' },
       ],
       manifesto: {
         title: '"A Stronger Union, Better Health and Education" — Promises Tracker (2022–2026)',
@@ -1015,7 +1039,8 @@
       label: 'TUV',
       color: '#4a7ab5',
       members: [
-        { name: 'Jim Allister', role: 'Party Leader · MLA · KC' },
+        { id: 'mla_jim_allister',    name: 'Jim Allister',    role: 'Party Leader · MLA · KC', photo: 'https://ui-avatars.com/api/?name=Jim+Allister&background=4a7ab5&color=fff&size=128&bold=true' },
+        { id: 'mla_timothy_gaston',  name: 'Timothy Gaston',  role: 'MLA · North Antrim',      photo: 'https://ui-avatars.com/api/?name=Timothy+Gaston&background=4a7ab5&color=fff&size=128&bold=true' },
       ],
       manifesto: {
         title: '"Principled Unionism, No Compromise" — Promises Tracker (2022–2026)',
@@ -1094,7 +1119,7 @@
       label: 'PBP',
       color: '#c0392b',
       members: [
-        { name: 'Gerry Carroll', role: 'MLA · West Belfast' },
+        { id: 'mla_gerry_carroll', name: 'Gerry Carroll', role: 'MLA · West Belfast', photo: 'https://ui-avatars.com/api/?name=Gerry+Carroll&background=c0392b&color=fff&size=128&bold=true' },
       ],
       manifesto: {
         title: '2022 Manifesto vs Delivery (2022–2026)',
@@ -1173,6 +1198,11 @@
   const AVATAR_SVG = `<svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26">
     <path d="M12 12c2.67 0 8 1.34 8 4v2H4v-2c0-2.66 5.33-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
   </svg>`;
+
+  function makeAvatar(m) {
+    if (m.photo) return `<img src="${m.photo}" alt="${m.name}" loading="lazy" />`;
+    return AVATAR_SVG;
+  }
 
   /* ── DOM ── */
   const progressBar = document.getElementById('progress-bar');
@@ -1287,29 +1317,25 @@
     }
   }
 
-  /* ── click party ── */
+  /* ── click party — navigate to party scorecard page ── */
+  const PARTY_ROUTES = {
+    SF:       '/party/party_sinn_fein',
+    DUP:      '/party/party_dup',
+    Alliance: '/party/party_alliance',
+    SDLP:     '/party/party_sdlp',
+    UUP:      '/party/party_uup',
+    TUV:      '/party/party_tuv',
+    PBP:      '/party/party_pbp',
+  };
+
   document.querySelectorAll('.party-card').forEach(card => {
     card.addEventListener('click', () => {
-      if (partyRows.classList.contains('out')) return;
-
       const key = card.dataset.party;
-      const party = PARTIES[key];
-      if (!party) return;
+      const route = PARTY_ROUTES[key];
+      if (!route) return;
 
-      isViewingProfile = true;
       card.classList.add('clicked');
-
-      // Step 1: fade the arc out (0.4s transition)
-      setTimeout(() => {
-        partyRows.classList.add('out');
-        const cta = document.getElementById('arc-cta');
-        if (cta) cta.style.opacity = '0';
-      }, 130);
-
-      // Step 2: once fade is done, swap to profiles view
-      setTimeout(() => {
-        showProfiles(key);
-      }, 530);
+      setTimeout(() => { window.location.href = route; }, 180);
     });
   });
 
@@ -1326,10 +1352,17 @@
       div.className = 'profile-card';
       div.style.setProperty('--party-color', party.color);
       div.innerHTML = `
-        <div class="profile-avatar">${AVATAR_SVG}</div>
+        <div class="profile-avatar">${makeAvatar(m)}</div>
         <div class="profile-name">${m.name}</div>
         <div class="profile-role">${m.role}</div>
+        ${m.id ? '<div class="profile-link-hint">View profile &rarr;</div>' : ''}
       `;
+      if (m.id) {
+        div.addEventListener('click', () => {
+          div.classList.add('clicked');
+          setTimeout(() => { window.location.href = '/mla/' + m.id; }, 180);
+        });
+      }
       profilesGrid.appendChild(div);
     });
 
