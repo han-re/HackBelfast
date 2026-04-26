@@ -130,7 +130,7 @@
 
     /* ── Parties section ── */
     #parties {
-      position: relative; overflow: hidden; max-height: 100vh;
+      position: relative; overflow-x: hidden; min-height: 100vh;
       background: url('../images/storm.jpg') center center / cover no-repeat;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -230,7 +230,6 @@
     .party-card.visible { animation: cardFade 0.9s cubic-bezier(0.16,1,0.3,1) forwards; }
 
     .party-card:hover {
-      transform: translateY(-5px) scale(1.02);
       border-color: var(--party-color, rgba(255,255,255,0.25));
       box-shadow:
         0 0 0 1px var(--party-color, transparent),
@@ -373,6 +372,85 @@
       to   { opacity: 1; transform: translateY(0);    }
     }
 
+    @keyframes floatTile {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-9px); }
+    }
+
+    .tilt-shine {
+      position: absolute; inset: 0; pointer-events: none; border-radius: 14px;
+      background: radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255,255,255,0.13) 0%, transparent 58%);
+      opacity: 0; transition: opacity 0.18s;
+    }
+
+    /* ── Manifesto review ── */
+    .manifesto-section {
+      width: 100%; max-width: 960px;
+      padding: 2rem 1rem 3rem;
+      display: flex; flex-direction: column; gap: 1.4rem;
+    }
+    .manifesto-title {
+      font-size: 1.15rem; font-weight: 700; color: var(--glow);
+      text-align: center;
+      text-shadow: 0 0 30px rgba(180,207,232,0.2);
+    }
+    .manifesto-divider {
+      width: 40px; height: 2px; margin: 0 auto;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      border-radius: 2px;
+    }
+    .manifesto-context {
+      font-size: 0.8rem; color: rgba(180,207,232,0.45);
+      text-align: center; max-width: 640px; margin: 0 auto; line-height: 1.6;
+    }
+    .manifesto-legend {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;
+      font-size: 0.72rem; color: rgba(180,207,232,0.4);
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.35rem; }
+    .legend-dot {
+      width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+    }
+    .policy-block {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.1rem 1.2rem;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+    .policy-heading-row {
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;
+    }
+    .policy-heading { font-size: 0.88rem; font-weight: 700; color: rgba(215,228,242,0.9); }
+    .policy-badge {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.07em;
+      background: rgba(232,150,42,0.14); color: var(--accent);
+      border: 1px solid rgba(232,150,42,0.28); border-radius: 20px;
+      padding: 0.1rem 0.5rem;
+    }
+    .policy-items { display: flex; flex-direction: column; gap: 0.42rem; }
+    .policy-item {
+      display: flex; align-items: flex-start; gap: 0.55rem;
+      font-size: 0.78rem; color: rgba(180,207,232,0.7); line-height: 1.45;
+    }
+    .status-dot {
+      width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 0.34rem;
+    }
+    .s-yes     .status-dot { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+    .s-partial .status-dot { background: #eab308; box-shadow: 0 0 6px rgba(234,179,8,0.5); }
+    .s-mixed   .status-dot { background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.5); }
+    .s-no      .status-dot { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+    .policy-summary {
+      margin-top: 0.7rem; padding-top: 0.6rem;
+      border-top: 1px solid rgba(180,207,232,0.07);
+      font-size: 0.74rem; color: rgba(180,207,232,0.38); font-style: italic;
+    }
+    .manifesto-conclusion {
+      background: rgba(11,20,38,0.6);
+      border: 1px solid rgba(180,207,232,0.12);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px; padding: 1rem 1.1rem;
+      font-size: 0.8rem; color: rgba(180,207,232,0.6); line-height: 1.65;
+    }
+
     /* Click highlight — scales up briefly, then fades with the container */
     .party-card.clicked {
       transform: scale(1.07) !important;
@@ -500,12 +578,14 @@
               <button class="back-btn" id="back-btn">&#8592; All Parties</button>
             </div>
             <div class="profiles-grid" id="profiles-grid"></div>
+            <div id="manifesto-container"></div>
           </div>
 
         </div><!-- .views-container -->
       </div><!-- .parties-content -->
     </section>
   </div>
+  <p style="font-size: 0.75rem; color: #666; margin: 1rem; align-items: centre;">© 2026 VoteWise</p>
 
   <script>
   /* ── Party member data ── */
@@ -519,7 +599,75 @@
         { name: 'Caoimhe Archibald', role: 'Finance Minister · MLA' },
         { name: "John O'Dowd", role: 'Education Minister · MLA' },
         { name: 'Deirdre Hargey', role: 'MLA · Belfast' },
-      ]
+      ],
+      manifesto: {
+        title: '2022 Manifesto vs Delivery (2022–2026)',
+        context: 'Sinn Féin won 27 seats in 2022 — the largest party — and secured the First Minister position for the first time in NI history. Stormont collapsed May 2022–Feb 2024 due to the DUP boycott. Since February 2024 SF has led the Executive alongside the DUP, operating within UK fiscal and constitutional constraints.',
+        sections: [
+          {
+            heading: 'Housing',
+            items: [
+              { s: 'partial', t: 'Social housing build targets (Housing Supply Strategy) — Executive committed to increased targets; delivery still below demand' },
+              { s: 'partial', t: 'Rent pressure measures / tenant support — advocated for rent controls and tenant protections; limited implementation due to cross-party disagreement' },
+              { s: 'mixed',   t: 'Private rented sector reform — some regulatory tightening but no full rent control system introduced' },
+              { s: 'no',      t: 'Major rent caps / structural rent freeze — not implemented' },
+            ],
+            summary: 'Housing prioritised in rhetoric and strategy, but structural affordability crisis remains largely unresolved.'
+          },
+          {
+            heading: 'Economy & Cost of Living',
+            items: [
+              { s: 'partial', t: 'Cost-of-living support packages — delivered through Executive interventions: energy payments, hardship schemes, targeted support' },
+              { s: 'partial', t: 'Public sector pay restoration — pay deals agreed across health, education, and civil service after prolonged industrial action' },
+              { s: 'partial', t: 'All-island economic cooperation — continued development of cross-border frameworks, particularly in energy and infrastructure' },
+              { s: 'no',      t: 'Transformational redistribution / major tax reform — no systemic tax restructuring implemented at NI level' },
+            ],
+            summary: 'Strong role in stabilising crisis-era finances and pay disputes, but limited structural economic transformation.'
+          },
+          {
+            heading: 'Education',
+            items: [
+              { s: 'partial', t: 'School funding stabilisation / teacher pay — implemented through Executive agreements following industrial action' },
+              { s: 'partial', t: 'Childcare strategy — new framework progressed but still below "universal free" ambitions' },
+              { s: 'mixed',   t: 'Integrated education expansion — supported in policy terms; growth remains incremental' },
+              { s: 'no',      t: 'Abolition of academic selection — no legislative change to the grammar school system' },
+            ],
+            summary: 'Incremental reform and funding stabilisation, but core structural education reforms remain unchanged.'
+          },
+          {
+            heading: 'Healthcare',
+            items: [
+              { s: 'partial', t: 'NHS waiting list investment plans — multi-year funding strategies introduced; waiting lists remain extremely high' },
+              { s: 'partial', t: 'Health service workforce stabilisation — recruitment and retention measures introduced following strike periods' },
+              { s: 'mixed',   t: 'Mental health expansion — increased funding but still below parity with physical health services' },
+              { s: 'no',      t: 'Major systemic reform of NHS structure in NI — no fundamental restructuring implemented' },
+            ],
+            summary: 'Significant crisis management role, but healthcare system pressures remain unresolved.'
+          },
+          {
+            heading: 'Equality, Rights & Language',
+            badge: 'Key Landmark Area',
+            items: [
+              { s: 'partial', t: 'Abortion services commissioning — services rolled out across all HSC Trusts during SF\'s leadership period (implemented via Westminster 2022)' },
+              { s: 'partial', t: 'Irish Language Act — delivered by Westminster (Identity & Language Act 2022); implementation progressed under Executive structures' },
+              { s: 'partial', t: 'LGBTQ+ equality strategies — progress on policy frameworks; key reforms (e.g. self-ID) not delivered' },
+              { s: 'partial', t: 'Anti-discrimination and hate crime legislation — ongoing legislative work within Executive framework' },
+            ],
+            summary: 'Mixed record — key landmark rights changes implemented, but many progressive reforms remain incomplete or stalled.'
+          },
+          {
+            heading: 'Environment & Infrastructure',
+            items: [
+              { s: 'partial', t: 'Climate Action Plan (2050 net zero framework) — policy framework in place; targets remain long-term and incremental' },
+              { s: 'partial', t: 'Public transport investment — ongoing infrastructure investment; free transport not implemented' },
+              { s: 'partial', t: 'Green energy transition — expansion of renewable initiatives and cross-border energy cooperation' },
+              { s: 'no',      t: 'Accelerated net zero timeline (2035 target) — not achieved; NI remains aligned to UK 2050 target' },
+            ],
+            summary: 'Active climate policy delivery within existing constraints, but not transformative compared to manifesto ambition.'
+          },
+        ],
+        conclusion: 'Sinn Féin has been most effective in governing stabilisation and rights implementation — notably cost-of-living crisis management, public sector pay settlements, and landmark equality reforms. However, the large-scale systemic economic and housing changes set out in the 2022 manifesto remain largely undelivered, constrained by coalition government, the 2022–2024 Stormont collapse, and Westminster fiscal control.'
+      }
     },
     DUP: {
       label: 'Democratic Unionist Party',
@@ -530,7 +678,78 @@
         { name: 'Edwin Poots', role: 'Agriculture Minister · MLA' },
         { name: 'Sammy Wilson', role: 'MP for East Antrim' },
         { name: 'Paul Frew', role: 'MLA · North Antrim' },
-      ]
+      ],
+      manifesto: {
+        title: '"Putting Unionism First" — Promises Tracker (2022–2026)',
+        context: 'The DUP was the largest unionist party after the 2022 election but boycotted the Executive until February 2024 in protest over post-Brexit trading arrangements. Stormont was effectively collapsed for 21 months. DUP influence is strongest through veto and withdrawal power rather than standalone policy delivery.',
+        sections: [
+          {
+            heading: 'Constitutional Position & Brexit',
+            badge: 'Defining Issue',
+            items: [
+              { s: 'partial', t: 'Opposition to NI Protocol / Windsor Framework — sustained boycott led to renegotiation (2023); DUP returned after securing Green Lane / Red Lane system, but EU trade alignment remains' },
+              { s: 'mixed',   t: 'Restoring NI\'s place in the UK internal market — partial achievement via Windsor Framework mitigations; regulatory dual-alignment persists' },
+              { s: 'partial', t: 'Unionist safeguards (East-West trade guarantees) — UK internal market legislation strengthened Westminster role; DUP argues sovereignty issues remain unresolved' },
+              { s: 'no',      t: 'Full removal of EU law applicability in NI — not achieved; structurally embedded under current framework' },
+            ],
+            summary: 'The central issue of the mandate. Partial diplomatic success but core constitutional grievance not fully resolved.'
+          },
+          {
+            heading: 'Stormont Governance',
+            items: [
+              { s: 'mixed',   t: 'Restoration of devolved government on unionist terms — returned to Executive in 2024 after financial and political concessions, but at cost of accepting a framework previously rejected' },
+              { s: 'partial', t: 'Opposition to Irish Sea border arrangements — continues politically; operational system remains in place' },
+            ],
+            summary: 'Boycott strategy followed by pragmatic re-entry. Concessions secured, but institutional damage acknowledged.'
+          },
+          {
+            heading: 'Economy & Cost of Living',
+            items: [
+              { s: 'partial', t: 'Cost-of-living support — supported UK-wide and Stormont hardship payments during crisis period and post-restoration' },
+              { s: 'mixed',   t: 'Tax competitiveness / business environment — advocated for pro-business policies; limited devolved tax powers restrict delivery' },
+              { s: 'no',      t: 'Fiscal autonomy for NI (e.g. corporation tax devolution) — no progress; UK Treasury has not devolved full tax-setting powers' },
+            ],
+            summary: 'Limited structural economic delivery; devolved tax powers remain out of reach.'
+          },
+          {
+            heading: 'Health',
+            items: [
+              { s: 'mixed',   t: 'NHS waiting list reduction — supported additional funding (~£135m/year) post-2024; system pressures remain severe' },
+              { s: 'partial', t: 'Health service stability after strikes — supported pay deals restoring parity with England' },
+              { s: 'no',      t: 'Major structural NHS reform — no transformative reform delivered' },
+            ],
+            summary: 'Crisis management support, but no systemic reform of a healthcare system under severe strain.'
+          },
+          {
+            heading: 'Education',
+            items: [
+              { s: 'mixed',   t: 'Education funding stability — supported budget settlements; sector remains under pressure from pay disputes and staffing shortages' },
+              { s: 'partial', t: 'Defence of academic selection (11+ system) — consistently defended; no legislative change enacted' },
+              { s: 'no',      t: 'Integrated education expansion — no significant advancement; DUP cautious or opposed to rapid expansion' },
+            ],
+            summary: 'Status quo maintained on selection; limited proactive education reform.'
+          },
+          {
+            heading: 'Equality, Justice & Identity',
+            items: [
+              { s: 'mixed',   t: 'Gender recognition / equality reforms — generally resistant to self-ID; UK Supreme Court rulings (2025) reinforced legal caution; no proactive DUP agenda' },
+              { s: 'partial', t: 'Conversion therapy legislation — opposed or cautious; Assembly motion passed (2024) despite DUP resistance; legislation remains stalled' },
+              { s: 'no',      t: 'Standalone Irish Language Act — explicitly opposed; instead accepted 2022 Westminster paired-language framework' },
+            ],
+            summary: 'Largely defensive position on equality and identity legislation.'
+          },
+          {
+            heading: 'Climate & Infrastructure',
+            items: [
+              { s: 'mixed',   t: 'Climate policy (2050 net zero framework) — supports in principle but prioritises economic impact; NI bound by 2050 target under 2022 Climate Act' },
+              { s: 'no',      t: 'Rapid green transition policies — no major acceleration beyond baseline statutory obligations' },
+              { s: 'partial', t: 'Infrastructure investment — supported capital funding increases post-2024 restoration; constrained by overall budget limits' },
+            ],
+            summary: 'Baseline climate compliance, no transformative infrastructure or green policy agenda.'
+          },
+        ],
+        conclusion: 'The DUP\'s 2022–2026 record is defined less by traditional policy delivery and more by constitutional leverage politics. The party successfully forced a renegotiation of post-Brexit arrangements, delayed but ultimately returned to power-sharing, and maintained core unionist positions — while domestic policy reform remained largely constrained within power-sharing limits and the long shadow of the 21-month Stormont boycott.'
+      }
     },
     Alliance: {
       label: 'Alliance Party',
@@ -540,7 +759,88 @@
         { name: 'Stephen Farry', role: 'MP for North Down' },
         { name: 'Paula Bradshaw', role: 'MLA · South Belfast' },
         { name: 'John Blair', role: 'MLA · South Antrim' },
-      ]
+      ],
+      manifesto: {
+        title: '"Shared Future, Practical Politics" — Promises Tracker (2022–2026)',
+        context: 'Alliance increased its seats in 2022 and positioned itself as a cross-community kingmaker. Stormont collapsed May 2022–Feb 2024. Post-restoration, Alliance entered government with Naomi Long continuing as Justice Minister. Influence is strongest through consensus-building and departmental control rather than unilateral delivery.',
+        sections: [
+          {
+            heading: 'Justice, Policing & Reform',
+            badge: 'Ministerial Portfolio',
+            items: [
+              { s: 'partial', t: 'Hate crime legislation — Justice Minister Long progressed consultation and draft proposals; legislation remains in development and politically contested' },
+              { s: 'partial', t: 'Policing reform and accountability — continued support for PSNI oversight following governance crises (2023–2024); structural reform ongoing' },
+              { s: 'mixed',   t: 'Conversion therapy ban — Alliance supported Assembly motion (2024) and is advancing a Private Member\'s Bill; not yet law due to Executive delays' },
+            ],
+            summary: 'Most consistent delivery area via ministerial control, but key reforms still in progress rather than complete.'
+          },
+          {
+            heading: 'Housing',
+            items: [
+              { s: 'mixed',   t: 'Affordable housing expansion — supported increased supply targets within Executive discussions; delivery constrained by funding and planning limits' },
+              { s: 'partial', t: 'Tackling homelessness — supported Housing Executive strategies and cross-departmental interventions; levels remain structurally unchanged' },
+              { s: 'no',      t: 'Rent control system — cautious on strict caps; favours regulatory reform over price controls; no rent control system implemented' },
+            ],
+            summary: 'Supportive role in housing discussions; no structural delivery on affordability.'
+          },
+          {
+            heading: 'Economy & Cost of Living',
+            items: [
+              { s: 'partial', t: 'Cost-of-living support — supported Executive hardship payments and UK-wide interventions during crisis period and post-2024 restoration' },
+              { s: 'mixed',   t: 'Progressive tax and economic reform — advocated for fair taxation; limited devolved tax powers restrict implementation' },
+              { s: 'no',      t: 'Major redistribution or wealth tax measures — not pursued at Executive level' },
+            ],
+            summary: 'Crisis support delivered; structural economic reform not within devolved reach.'
+          },
+          {
+            heading: 'Health',
+            items: [
+              { s: 'mixed',   t: 'NHS waiting list reduction — supported additional funding allocations (~£135m/year post-2024); lists remain among highest in UK' },
+              { s: 'partial', t: 'Public health service stability — supported pay settlements and workforce retention during industrial disputes' },
+              { s: 'no',      t: 'Major structural NHS reform — no systemic overhaul; system pressures persist' },
+            ],
+            summary: 'Contributed to crisis stabilisation; systemic reform remains undelivered across the Executive.'
+          },
+          {
+            heading: 'Education',
+            items: [
+              { s: 'mixed',   t: 'Integrated education expansion — strong ideological support; incremental progress but no rapid system-wide transformation' },
+              { s: 'partial', t: 'Education funding stability — supported budget protections for schools during fiscal pressure periods' },
+              { s: 'no',      t: 'Abolition of academic selection — supported long-term but no legislative change due to lack of cross-party consensus' },
+            ],
+            summary: 'Incremental progress on integration; structural reform blocked by political arithmetic.'
+          },
+          {
+            heading: 'Climate & Environment',
+            items: [
+              { s: 'partial', t: 'Climate action / net zero policy — strong advocate for Climate Change Act (NI) 2022 framework; emphasis on implementation and acceleration' },
+              { s: 'mixed',   t: 'Green transport and infrastructure — supported decarbonisation policies; large-scale transformation remains limited' },
+              { s: 'partial', t: 'Lough Neagh crisis response — actively raised concerns and supported motions for stronger environmental protections and governance reform' },
+            ],
+            summary: 'One of the strongest climate voices in the Assembly, but delivery constrained by shared Executive responsibility.'
+          },
+          {
+            heading: 'Equality & Rights',
+            badge: 'Strongest Advocacy Area',
+            items: [
+              { s: 'partial', t: 'Irish language and cultural equality — supported implementation of Identity and Language Act (2022), emphasising balanced cultural recognition' },
+              { s: 'partial', t: 'LGBTQ+ rights / conversion therapy ban — one of the strongest Assembly advocates; bill in progress but not yet enacted' },
+              { s: 'mixed',   t: 'Gender recognition reform — supports inclusive reform; progress constrained by legal complexity following UK-wide court rulings (2025)' },
+            ],
+            summary: 'Consistent and credible equality advocate; legislative outcomes dependent on wider Executive consensus.'
+          },
+          {
+            heading: 'Governance & Power-Sharing',
+            items: [
+              { s: 'partial', t: 'Restoration of Stormont — played active facilitation role in 2024 return; consistently advocated for functioning institutions throughout collapse' },
+              { s: 'partial', t: 'Cross-community governance model — core Alliance principle; actively embedded in Executive decision-making post-restoration' },
+              { s: 'mixed',   t: 'Institutional reform (Assembly efficiency and transparency) — supported reforms; changes remain gradual and politically constrained' },
+            ],
+            summary: 'Central role as a cross-community stabiliser; institutional reform progress slow.'
+          },
+        ],
+        conclusion: 'Alliance\'s 2022–2026 record is defined by strong influence in justice, equality, and climate policy shaping, and a consistent role as a cross-community stabiliser in power-sharing government. Moderate legislative delivery through the Justice ministerial portfolio. Most effective in areas requiring consensus-building; least effective where structural or fiscal overhaul demands resources or unilateral action beyond its reach.'
+      }
     },
     SDLP: {
       label: 'SDLP',
@@ -550,7 +850,64 @@
         { name: 'Claire Hanna', role: 'MP · South Belfast' },
         { name: "Matthew O'Toole", role: 'MLA · Opposition Leader' },
         { name: 'Patsy McGlone', role: 'MLA · Mid Ulster' },
-      ]
+      ],
+      manifesto: {
+        title: '2022 Manifesto vs Delivery (2022–2026)',
+        context: 'The SDLP won 8 seats in 2022, down from 12 — a historic low. They did not enter the Executive and have functioned as the Official Opposition. Stormont was suspended May 2022–Feb 2024. Delivery is measured primarily through opposition activity and influence, not implementation.',
+        sections: [
+          {
+            heading: 'Housing',
+            items: [
+              { s: 'partial', t: 'Social housing expansion (13,000 homes) — strong advocacy via "Plan for Change" (2024); Executive still missing long-term targets' },
+              { s: 'partial', t: 'Rent controls / rent reform — motion introduced (2026) calling for rent reform; no legislation passed' },
+              { s: 'no',      t: 'Empty homes / mortgage rescue expansion — no major progress or enacted policy' },
+            ],
+            summary: 'Active opposition voice on housing, but no structural delivery.'
+          },
+          {
+            heading: 'Economy & Regional Development',
+            items: [
+              { s: 'partial', t: 'Magee University expansion (10,000 students) — taskforce established (2024), student numbers rising but target not yet met' },
+              { s: 'partial', t: 'Removal of student number cap (MaSN) — repeatedly pushed at Westminster level; not delivered' },
+              { s: 'no',      t: 'Investment Bank / Corporation Tax cut / Children\'s Future Fund — no significant legislative or policy progress' },
+              { s: 'no',      t: 'Workplace reforms (paternity / maternity rights) — limited Assembly-level activity' },
+            ],
+            summary: 'Strong regional development advocacy, weak delivery on broader economic restructuring.'
+          },
+          {
+            heading: 'Education & Childcare',
+            items: [
+              { s: 'mixed', t: 'Childcare expansion (30-hour free model) — softened into cost-reduction strategy (halve costs by 2030); some influence on subsidy schemes' },
+              { s: 'mixed', t: 'Phasing out academic selection — position maintained throughout but no legislative action taken' },
+              { s: 'no',    t: 'SEN funding, school uniforms, teacher pay reform — no major targeted policy progress identified' },
+            ],
+            summary: 'Some influence on childcare policy direction, but limited structural education reform.'
+          },
+          {
+            heading: 'Healthcare',
+            items: [
+              { s: 'mixed',   t: 'NHS pay — SDLP motion supported 2024 settlement (~5.5%), close to demand but driven by wider funding arrangements' },
+              { s: 'partial', t: 'Waiting lists (£1bn reduction target) — strong campaigning; Executive funding increased but lists remain extremely high' },
+              { s: 'no',      t: 'Mental health / cancer strategy / primary care reform — no significant SDLP-led legislative progress found' },
+            ],
+            summary: 'Active pressure group role, limited direct policy control.'
+          },
+          {
+            heading: 'Equality, Rights & Environment',
+            badge: 'Strongest Area',
+            items: [
+              { s: 'partial', t: 'Conversion therapy ban — successful Assembly motion (2024); now being taken forward legislatively by other parties' },
+              { s: 'partial', t: 'Hate crime legislation — ongoing advocacy; legislation in development but not yet passed' },
+              { s: 'partial', t: 'Environmental protection / Lough Neagh crisis / EPA — multiple motions passed or debated; strong campaigning presence' },
+              { s: 'partial', t: 'Nature restoration agenda — consistent opposition campaigning; no dedicated agency created' },
+              { s: 'mixed',   t: 'Irish language / identity legislation — delivered via Westminster (Identity and Language Act 2022); supported but not SDLP-driven' },
+              { s: 'no',      t: 'Disability strategy / workers\' day-one rights — limited Assembly-level progress identified' },
+            ],
+            summary: 'Strongest area for sustained opposition campaigning, especially equality and environment, but limited implementation power.'
+          },
+        ],
+        conclusion: 'The SDLP has been most effective as a pressure and lobbying opposition party, particularly on housing, Magee expansion, and environmental issues. Most flagship manifesto commitments remain unimplemented or partially realised — largely due to structural constraints (no Executive participation, Stormont\'s 21-month suspension, Westminster-reserved powers) rather than lack of activity.'
+      }
     },
     UUP: {
       label: 'UUP',
@@ -560,21 +917,227 @@
         { name: 'Robin Swann', role: 'Health Minister · MLA' },
         { name: 'Mike Nesbitt', role: 'MLA · Strangford' },
         { name: 'Tom Elliott', role: 'MLA · Fermanagh & South Tyrone' },
-      ]
+      ],
+      manifesto: {
+        title: '"A Stronger Union, Better Health and Education" — Promises Tracker (2022–2026)',
+        context: 'The UUP remained a mid-sized unionist party after 2022, concentrating influence in health, rural policy, and pragmatic governance. Stormont collapsed May 2022–Feb 2024. Post-restoration, the UUP held ministerial roles including Health Minister Robin Swann. Delivery depends heavily on budget constraints and UK Treasury funding.',
+        sections: [
+          {
+            heading: 'Health',
+            badge: 'Ministerial Portfolio',
+            items: [
+              { s: 'mixed',   t: 'NHS recovery and waiting lists — Robin Swann oversaw recovery planning and funding injections as Health Minister; lists remain among the worst in the UK despite ~£135m/year post-2024' },
+              { s: 'partial', t: 'Health workforce retention and pay — supported pay parity deals following industrial action (2022–2024); restored alignment with England, though below inflation in real terms' },
+              { s: 'partial', t: 'COVID-19 recovery and system stabilisation — continued implementation of post-pandemic elective care recovery frameworks' },
+              { s: 'no',      t: 'Major structural NHS reform — no fundamental restructuring of the health system delivered' },
+            ],
+            summary: 'Most tangible influence through health ministerial leadership and system stabilisation; structural reform undelivered.'
+          },
+          {
+            heading: 'Education',
+            items: [
+              { s: 'partial', t: 'Education funding stability — supported budget protections for schools during fiscal pressure periods; sector remains under strain' },
+              { s: 'mixed',   t: 'Teacher recruitment and retention — raised concerns over staffing shortages and pay disputes; structural resolution remains limited' },
+              { s: 'no',      t: 'Abolition of academic selection — UUP supportive of grammar school system; no move toward abolition' },
+              { s: 'no',      t: 'Major integrated education expansion — no significant policy shift in favour of rapid system-wide integration' },
+            ],
+            summary: 'Funding stability prioritised; no structural change to education system.'
+          },
+          {
+            heading: 'Economy & Cost of Living',
+            items: [
+              { s: 'partial', t: 'Cost-of-living support — supported UK-wide and Stormont hardship payments during crisis period and post-2024 restoration' },
+              { s: 'mixed',   t: 'Rural economy support — advocated for farming and rural development funding; some gains through UK agriculture frameworks, constrained by post-Brexit subsidy arrangements' },
+              { s: 'no',      t: 'Major tax devolution (corporation tax powers) — no progress on devolving additional fiscal powers to Stormont' },
+            ],
+            summary: 'Crisis support delivered; rural advocacy ongoing but constrained by post-Brexit landscape.'
+          },
+          {
+            heading: 'Governance & Constitutional Position',
+            items: [
+              { s: 'partial', t: 'Support for Stormont restoration (2024) — played a constructive role in restoring devolved institutions after DUP boycott ended' },
+              { s: 'mixed',   t: 'Unionist constitutional positioning — maintains strong support for the Union but takes a pragmatic, less confrontational stance than DUP' },
+              { s: 'no',      t: 'Significant constitutional restructuring or Brexit renegotiation — no major independent breakthroughs; relies on UK Government negotiations' },
+            ],
+            summary: 'Pragmatic unionist approach; governance stability prioritised over constitutional confrontation.'
+          },
+          {
+            heading: 'Agriculture & Rural Affairs',
+            items: [
+              { s: 'partial', t: 'Agricultural support frameworks — strong focus on protecting farming sector through UK subsidy systems and Stormont rural funding programmes' },
+              { s: 'mixed',   t: 'Food supply chain resilience — supported policy discussions post-Brexit; ongoing trade frictions and cost pressures remain unresolved' },
+              { s: 'no',      t: 'Major rural economic transformation programme — no large-scale structural reform delivered' },
+            ],
+            summary: 'Consistent rural advocacy, but delivery constrained by Westminster-controlled subsidy frameworks.'
+          },
+          {
+            heading: 'Justice & Public Services',
+            items: [
+              { s: 'mixed',   t: 'Community safety and policing support — backed PSNI stability and resources during leadership and institutional challenges (2023–2024)' },
+              { s: 'partial', t: 'Justice system stability — supported continued functioning under Justice Minister Naomi Long (Alliance), prioritising continuity over reform' },
+            ],
+            summary: 'Supportive role in maintaining public service stability rather than driving reform.'
+          },
+        ],
+        conclusion: 'The UUP\'s 2022–2026 record is defined by pragmatic, governance-focused unionism rather than confrontational politics. Most tangible influence came through health ministerial leadership and system stabilisation. Broader manifesto ambitions remain constrained by limited ministerial scope, budget pressures, and the power-sharing system. Delivery is strongest in administrative continuity; weakest in structural reform.'
+      }
     },
     TUV: {
       label: 'TUV',
       color: '#4a7ab5',
       members: [
         { name: 'Jim Allister', role: 'Party Leader · MLA · KC' },
-      ]
+      ],
+      manifesto: {
+        title: '"Principled Unionism, No Compromise" — Promises Tracker (2022–2026)',
+        context: 'TUV holds 1 MLA seat (Jim Allister). The party has never entered government and remains in permanent opposition to power-sharing structures involving Sinn Féin. Strategy is primarily constitutional opposition rather than policy delivery. Influence is exercised through debate, scrutiny, and unionist pressure politics.',
+        sections: [
+          {
+            heading: 'Constitutional Position & Brexit',
+            badge: 'Core Mission',
+            items: [
+              { s: 'partial', t: 'Opposition to Windsor Framework / NI Protocol — consistently opposed EU–UK trade arrangements; continues to call for full restoration of unfettered UK internal market access' },
+              { s: 'partial', t: 'Opposition to power-sharing with Sinn Féin — core ideological position maintained throughout the mandate; TUV refuses Executive participation on principle' },
+              { s: 'mixed',   t: 'Calls for direct rule — advocates for increased Westminster control during institutional deadlock; no policy adoption achieved' },
+              { s: 'no',      t: 'Protocol removal or fundamental renegotiation — no substantive change beyond Windsor Framework adjustments negotiated by UK Government and DUP' },
+            ],
+            summary: 'Constitutional opposition is the defining purpose of the party. Influence is rhetorical and pressure-based rather than legislative.'
+          },
+          {
+            heading: 'Stormont Governance',
+            items: [
+              { s: 'partial', t: 'Opposition to 2024 Stormont restoration deal — vocal critic of DUP return to Executive, arguing it legitimises Windsor Framework arrangements' },
+              { s: 'mixed',   t: 'Influence on governance structures — limited to single MLA representation and exclusion from Executive participation' },
+              { s: 'no',      t: 'Executive participation or policy implementation — TUV has never held a ministerial position in devolved government' },
+            ],
+            summary: 'Operates exclusively as opposition; no governing role or implementation capacity.'
+          },
+          {
+            heading: 'Economy & Cost of Living',
+            items: [
+              { s: 'partial', t: 'Criticism of UK–EU economic arrangements — consistently argues post-Brexit trade friction harms NI economy; no policymaking power to address it' },
+              { s: 'mixed',   t: 'Cost-of-living interventions — supports general relief measures in debate; no legislative mechanism to deliver them' },
+              { s: 'no',      t: 'Tax or economic reform implementation — no direct delivery capacity or enacted reforms' },
+            ],
+            summary: 'Economic critique well-articulated; delivery capacity absent.'
+          },
+          {
+            heading: 'Health',
+            items: [
+              { s: 'mixed',   t: 'NHS pressure and accountability critique — frequently raises waiting lists, staffing shortages, and performance concerns in Assembly debate' },
+              { s: 'partial', t: 'Support for Executive scrutiny and transparency — advocates for accountability on health funding and decision-making' },
+              { s: 'no',      t: 'Health reform or funding initiatives delivered — no implementation capacity or legislative success' },
+            ],
+            summary: 'Scrutiny role only; no direct health policy delivery.'
+          },
+          {
+            heading: 'Education',
+            items: [
+              { s: 'partial', t: 'Defence of academic selection — strong and consistent defender of grammar school system against abolition proposals' },
+              { s: 'mixed',   t: 'Opposition to integrated education expansion — sceptical of rapid system-wide integration; influence limited to debate interventions' },
+              { s: 'no',      t: 'Education policy reforms delivered — no legislative delivery capacity' },
+            ],
+            summary: 'Status quo defended in debate; no legislative influence on education outcomes.'
+          },
+          {
+            heading: 'Justice & Rights',
+            items: [
+              { s: 'partial', t: 'Opposition to identity and language reforms — consistently opposed Identity and Language Act (2022), particularly Irish language statutory provisions' },
+              { s: 'mixed',   t: 'Conversion therapy legislation — opposed Assembly motion progress (2024); limited influence on outcome' },
+              { s: 'no',      t: 'Human rights or equality reform initiatives — no policy implementation role' },
+            ],
+            summary: 'Oppositional on rights and identity legislation; no delivery capacity.'
+          },
+          {
+            heading: 'Climate & Infrastructure',
+            items: [
+              { s: 'mixed',   t: 'Climate policy — accepts statutory 2050 framework but prioritises economic and industrial concerns over acceleration' },
+              { s: 'no',      t: 'Green transition initiatives — no independent climate policy delivery' },
+              { s: 'partial', t: 'Infrastructure concerns — raises localised roads and rural service issues in Assembly debate; no legislative control' },
+            ],
+            summary: 'Climate sceptic in tone; no infrastructure or green delivery capacity.'
+          },
+        ],
+        conclusion: 'The TUV\'s 2022–2026 record is defined almost entirely by strong ideological opposition to the Windsor Framework, power-sharing arrangements, and post-Brexit governance in NI. With 1 MLA and no Executive participation, direct policy delivery is structurally impossible. The party functions as a hard-line constitutional opposition voice — persistent influence on the unionist political narrative, minimal impact on policy outcomes.'
+      }
     },
     PBP: {
       label: 'PBP',
       color: '#c0392b',
       members: [
         { name: 'Gerry Carroll', role: 'MLA · West Belfast' },
-      ]
+      ],
+      manifesto: {
+        title: '2022 Manifesto vs Delivery (2022–2026)',
+        context: 'PBP held 1 of 90 Assembly seats. Stormont was suspended May 2022–Feb 2024. Most commitments must be assessed as advocacy impact rather than direct delivery from a single-MLA opposition.',
+        sections: [
+          {
+            heading: 'Housing',
+            badge: 'Strongest Area',
+            items: [
+              { s: 'partial', t: 'Rent controls — People\'s Housing Bill (2024–25) debated, not passed' },
+              { s: 'partial', t: 'No-fault eviction ban — included in bill, debated but not enacted' },
+              { s: 'no',      t: 'Mass public housing expansion — no change to NIHE borrowing or build targets' },
+              { s: 'partial', t: 'NIHE retained publicly — status quo maintained, not transformed' },
+            ],
+            summary: 'Most sustained legislative effort of the mandate. Structural change not achieved.'
+          },
+          {
+            heading: 'Cost of Living & Workers\' Rights',
+            items: [
+              { s: 'no',      t: '£1,000 hardship payment — not delivered; UK-wide payments provided instead' },
+              { s: 'no',      t: 'Price controls & energy nationalisation — no Stormont legislative progress' },
+              { s: 'partial', t: '£15 minimum wage — ongoing advocacy; wage-setting is Westminster-controlled' },
+              { s: 'mixed',   t: 'Public sector pay — 2024 deal restored parity with England, short of inflation-busting target' },
+              { s: 'partial', t: 'Trade Union Freedom Bill — defeated pre-2022, not reintroduced this mandate' },
+              { s: 'no',      t: 'Four-day week / zero-hour ban — no legislative progress' },
+            ],
+            summary: 'High visibility in industrial disputes. Limited legislative delivery due to reserved powers and Assembly arithmetic.'
+          },
+          {
+            heading: 'Education',
+            items: [
+              { s: 'no',    t: 'Abolish tuition fees — no movement' },
+              { s: 'no',    t: 'Universal free school meals — not implemented' },
+              { s: 'mixed', t: 'Education worker pay — strikes supported; settlements fell short of targets' },
+              { s: 'no',    t: 'Class size reduction & staffing reversals — no major policy change' },
+            ],
+            summary: 'Primarily advocacy-based. Budget constraints and lack of Assembly control limited structural change.'
+          },
+          {
+            heading: 'Healthcare',
+            items: [
+              { s: 'mixed', t: 'NHS pay & strikes — active support; parity restored but not above inflation' },
+              { s: 'no',    t: 'End outsourcing / privatisation — no reversal' },
+              { s: 'no',    t: 'Mental health funding doubling — not achieved' },
+              { s: 'mixed', t: 'Waiting list reduction — continued crisis; no decisive improvement' },
+              { s: 'yes',   t: 'COVID-19 inquiry — covered via UK-wide inquiry with NI evidence' },
+            ],
+            summary: 'Visible political involvement. Systemic outcomes largely unchanged or worsening.'
+          },
+          {
+            heading: 'Equality & Rights',
+            items: [
+              { s: 'yes',   t: 'Abortion services commissioned (2022) — implemented via Westminster intervention' },
+              { s: 'mixed', t: 'Irish Language Act — delivered, but not in the standalone form originally demanded' },
+              { s: 'no',    t: 'Self-ID gender reform — not implemented' },
+              { s: 'no',    t: 'Hostile Environment rollback — reserved policy area; no devolved change' },
+            ],
+            summary: 'Partial alignment on abortion access. Key equality reforms remain incomplete or externally determined.'
+          },
+          {
+            heading: 'Climate & Infrastructure',
+            items: [
+              { s: 'no',      t: 'Net zero by 2035 — NI statutory target remains 2050' },
+              { s: 'no',      t: 'Free public transport — not implemented' },
+              { s: 'partial', t: 'Opposed water charges — no charges introduced (defensive success only)' },
+              { s: 'partial', t: 'Opposed Translink privatisation — status quo maintained' },
+            ],
+            summary: 'Mostly defensive politics. No policy transformation achieved.'
+          },
+        ],
+        conclusion: 'Housing is the only area where sustained policy design and political pressure align closely with the 2022 manifesto. Elsewhere, outcomes are partial, externally delivered, or not realised — constrained by single-MLA status, Stormont\'s 21-month suspension, and Westminster-reserved powers.'
+      }
     },
   };
 
@@ -603,11 +1166,14 @@
   let isViewingProfile = false;
   let cardsRevealed = false;
   let revealSession = 0;
+  let profileScrollFloor = 0;
 
   /* ── Scroll ── */
   function onScroll() {
-    if (isViewingProfile) return; // ✅ PREVENT RESET BUG
-
+    if (isViewingProfile && window.scrollY < profileScrollFloor) {
+      window.scrollTo({ top: profileScrollFloor, behavior: 'instant' });
+      return;
+    }
     const scrolled = window.scrollY;
     const vh = window.innerHeight;
     const total = document.documentElement.scrollHeight - vh;
@@ -623,12 +1189,40 @@
     scrollHint.style.opacity = Math.max(0, 1 - p / 0.25);
     heroBlack.style.opacity = fadeP;
 
-    if (fadeP >= 0.85 && !cardsRevealed) {
+    if (fadeP >= 0.85) {
       document.getElementById('fixed-hero').style.visibility = 'hidden';
-      partiesEl.classList.add('revealed');
-      sectionHeader.classList.add('visible');
-      revealPartyCards();
+      if (!cardsRevealed) {
+        partiesEl.classList.add('revealed');
+        sectionHeader.classList.add('visible');
+        revealPartyCards();
+      }
+    } else {
+      if (!isViewingProfile) {
+        document.getElementById('fixed-hero').style.visibility = 'visible';
+        if (cardsRevealed) resetView();
+      }
     }
+  }
+
+  function resetView() {
+    revealSession++;
+    cardsRevealed = false;
+    isViewingProfile = false;
+    partiesEl.classList.remove('revealed');
+    sectionHeader.classList.remove('visible');
+    if (profilesView.style.display && profilesView.style.display !== 'none') {
+      profilesView.classList.remove('active');
+      profilesView.style.display = 'none';
+      partyRows.style.display = '';
+      partyRows.classList.remove('out');
+    }
+    document.querySelectorAll('.party-card').forEach(c => {
+      c.classList.remove('visible', 'clicked');
+      c.style.animation = '';
+      c.style.transform = '';
+      c.style.transition = '';
+      c.style.opacity = '';
+    });
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -641,9 +1235,14 @@
 
     document.querySelectorAll('.party-card').forEach((card, i) => {
       setTimeout(() => {
-        if (session === revealSession) {
-          card.classList.add('visible');
-        }
+        if (session !== revealSession) return;
+        card.classList.add('visible');
+        setTimeout(() => {
+          if (session !== revealSession) return;
+          card.style.opacity = '1';
+          const offset = parseFloat(card.dataset.delay || 0) * 0.38;
+          card.style.animation = `floatTile 3.4s ease-in-out ${offset}s infinite`;
+        }, 950);
       }, 200 + i * 100);
     });
   }
@@ -651,21 +1250,24 @@
   /* ── click party ── */
   document.querySelectorAll('.party-card').forEach(card => {
     card.addEventListener('click', () => {
-
       if (partyRows.classList.contains('out')) return;
-
-      isViewingProfile = true; // ✅ LOCK SCROLL
 
       const key = card.dataset.party;
       const party = PARTIES[key];
       if (!party) return;
 
+      isViewingProfile = true;
       card.classList.add('clicked');
 
+      // Step 1: fade the arc out (0.4s transition)
       setTimeout(() => {
         partyRows.classList.add('out');
-        showProfiles(key);
       }, 130);
+
+      // Step 2: once fade is done, swap to profiles view
+      setTimeout(() => {
+        showProfiles(key);
+      }, 530);
     });
   });
 
@@ -675,7 +1277,6 @@
     if (!party) return;
 
     partyRows.style.display = 'none';
-
     profilesGrid.innerHTML = '';
 
     party.members.forEach(m => {
@@ -690,39 +1291,140 @@
       profilesGrid.appendChild(div);
     });
 
+    sectionTitle.textContent = party.label;
+    sectionSub.textContent = 'Members, votes, and declared interests';
+    document.getElementById('manifesto-container').innerHTML = renderManifesto(party);
+    profileScrollFloor = window.scrollY;
     profilesView.style.display = 'flex';
 
-    requestAnimationFrame(() => {
+    // Double rAF ensures the display change is painted before the opacity transition starts
+    requestAnimationFrame(() => requestAnimationFrame(() => {
       profilesView.classList.add('active');
-
       setTimeout(() => {
-        document.querySelectorAll('.profile-card')
-          .forEach(c => c.classList.add('visible'));
-      }, 200);
+        profilesGrid.querySelectorAll('.profile-card').forEach(c => c.classList.add('visible'));
+      }, 220);
+    }));
+  }
+
+  /* ── 3D tilt effect ── */
+  function initTiltEffect(card) {
+    const shine = document.createElement('div');
+    shine.className = 'tilt-shine';
+    card.appendChild(shine);
+
+    let floatAnim = '';
+    let leaving = false;
+
+    card.addEventListener('mouseenter', () => {
+      leaving = false;
+      floatAnim = card.style.animation || '';
+      if (floatAnim) card.style.animation = 'none';
+      card.style.transition = 'border-color 0.35s ease, box-shadow 0.35s ease';
+    });
+
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const dx = ((e.clientX - r.left) / r.width  - 0.5) * 2; // -1..1
+      const dy = ((e.clientY - r.top)  / r.height - 0.5) * 2; // -1..1
+      card.style.transform = `perspective(700px) rotateX(${-dy * 13}deg) rotateY(${dx * 13}deg) translateZ(14px) scale(1.02)`;
+      card.style.setProperty('--shine-x', `${(dx + 1) / 2 * 100}%`);
+      card.style.setProperty('--shine-y', `${(dy + 1) / 2 * 100}%`);
+      shine.style.opacity = '1';
+    });
+
+    card.addEventListener('mouseleave', () => {
+      leaving = true;
+      shine.style.opacity = '0';
+      card.style.transition = 'border-color 0.35s ease, box-shadow 0.35s ease, transform 0.55s cubic-bezier(0.23,1,0.32,1)';
+      card.style.transform = '';
+      const saved = floatAnim;
+      setTimeout(() => {
+        if (!leaving) return;
+        card.style.transition = '';
+        if (saved) card.style.animation = saved;
+        leaving = false;
+      }, 560);
     });
   }
 
+  document.querySelectorAll('.party-card').forEach(initTiltEffect);
+
+  /* ── Manifesto renderer ── */
+  function renderManifesto(party) {
+    if (!party.manifesto) return '';
+    const m = party.manifesto;
+
+    const sectionsHtml = m.sections.map(sec => {
+      const itemsHtml = sec.items.map(item => `
+        <div class="policy-item s-${item.s}">
+          <div class="status-dot"></div>
+          <span>${item.t}</span>
+        </div>`).join('');
+      return `
+        <div class="policy-block">
+          <div class="policy-heading-row">
+            <div class="policy-heading">${sec.heading}</div>
+            ${sec.badge ? `<span class="policy-badge">${sec.badge}</span>` : ''}
+          </div>
+          <div class="policy-items">${itemsHtml}</div>
+          ${sec.summary ? `<div class="policy-summary">${sec.summary}</div>` : ''}
+        </div>`;
+    }).join('');
+
+    const legend = [
+      { color: '#22c55e', label: 'Delivered' },
+      { color: '#f97316', label: 'Partial' },
+      { color: '#eab308', label: 'Advocacy only' },
+      { color: '#ef4444', label: 'Not delivered' },
+    ].map(l => `<div class="legend-item"><div class="legend-dot" style="background:${l.color}"></div>${l.label}</div>`).join('');
+
+    return `
+      <div class="manifesto-section">
+        <div class="manifesto-title">${m.title}</div>
+        <div class="manifesto-divider"></div>
+        <div class="manifesto-context">${m.context}</div>
+        <div class="manifesto-legend">${legend}</div>
+        ${sectionsHtml}
+        <div class="manifesto-conclusion">${m.conclusion}</div>
+      </div>`;
+  }
+
+  /* ── Prevent scrolling up while in profiles view ── */
+  let lastTouchY = 0;
+  window.addEventListener('wheel', e => {
+    if (isViewingProfile && e.deltaY < 0 && window.scrollY <= profileScrollFloor) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+  window.addEventListener('touchstart', e => {
+    lastTouchY = e.touches[0].clientY;
+  }, { passive: true });
+  window.addEventListener('touchmove', e => {
+    if (isViewingProfile) {
+      const delta = lastTouchY - e.touches[0].clientY;
+      if (delta < 0 && window.scrollY <= profileScrollFloor) {
+        e.preventDefault();
+      }
+      lastTouchY = e.touches[0].clientY;
+    }
+  }, { passive: false });
+
   /* ── back ── */
   backBtn.addEventListener('click', () => {
-
-    isViewingProfile = false; // ✅ UNLOCK SCROLL
-
+    isViewingProfile = false;
     profilesView.classList.remove('active');
 
     setTimeout(() => {
+      sectionTitle.textContent = 'The Seven Parties';
+      sectionSub.textContent = 'Select a party to explore members, votes, and declared interests';
       profilesView.style.display = 'none';
-
+      document.getElementById('manifesto-container').innerHTML = '';
       partyRows.style.display = '';
       partyRows.classList.remove('out');
-
-      document.querySelectorAll('.party-card').forEach(c => {
-        c.classList.remove('clicked', 'visible');
-      });
-
+      document.querySelectorAll('.party-card').forEach(c => c.classList.remove('clicked', 'visible'));
       cardsRevealed = false;
-
       revealPartyCards();
-    }, 300);
+    }, 450);
   });
 
 </script>
