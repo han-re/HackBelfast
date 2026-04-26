@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #080e1a;
+  --foreground: #cddcec;
+  --mandate-dark: #080e1a;
+  --mandate-card: rgba(11,20,38,0.82);
+  --mandate-border: rgba(180,207,232,0.11);
+  --mandate-accent: #e8962a;
+  --mandate-glow: #b4cfe8;
 }
 
 @theme inline {
@@ -12,15 +17,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
+  background: var(--mandate-dark);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), 'Segoe UI', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+@keyframes shimmerBar {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes titleEntrance {
+  from { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+  to   { opacity: 1; transform: scale(1);    filter: blur(0);   }
+}
+
+@keyframes hintEntrance {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes bounceTx {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(7px); }
 }

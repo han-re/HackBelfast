@@ -256,3 +256,6 @@ cython_debug/
 ehthumbs.db
 Thumbs.db
 desktop.ini
+# Source documents
+*.docx
+*.doc
