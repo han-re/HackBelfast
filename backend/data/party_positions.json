@@ -1,0 +1,99 @@
+{
+    "_comment": "Scores derived from 2022-2026 manifesto delivery data. Scale: -2 (strongly against) to +2 (strongly for). Each axis maps to a quiz question.",
+    "_axes": {
+        "housing":     "q1 — private rent caps",
+        "education":   "q2 — abolish academic selection at 11",
+        "language":    "q3 — Irish equal legal status",
+        "environment": "q4 — net zero by 2035",
+        "health":      "q5 — remove private companies from NHS",
+        "equality":    "q6 — standalone Hate Crime Bill",
+        "economy":     "q7 — cut corporation tax below UK rate",
+        "welfare":     "q8 — mitigate welfare cuts locally",
+        "integration": "q9 — deepen cross-border cooperation",
+        "justice":     "q10 — reopen Troubles legacy cases"
+    },
+    "party_alliance": {
+        "housing":     0,
+        "education":   2,
+        "language":    1,
+        "environment": 2,
+        "health":      0,
+        "equality":    2,
+        "economy":    -1,
+        "welfare":     1,
+        "integration": 2,
+        "justice":     1
+    },
+    "party_dup": {
+        "housing":    -1,
+        "education":  -2,
+        "language":   -2,
+        "environment":-1,
+        "health":     -1,
+        "equality":   -2,
+        "economy":     2,
+        "welfare":     0,
+        "integration":-2,
+        "justice":    -2
+    },
+    "party_sinn_fein": {
+        "housing":     1,
+        "education":   1,
+        "language":    2,
+        "environment": 1,
+        "health":      1,
+        "equality":    2,
+        "economy":    -1,
+        "welfare":     2,
+        "integration": 2,
+        "justice":     1
+    },
+    "party_uup": {
+        "housing":    -1,
+        "education":  -2,
+        "language":   -1,
+        "environment": 0,
+        "health":      1,
+        "equality":   -1,
+        "economy":     1,
+        "welfare":     0,
+        "integration":-1,
+        "justice":    -1
+    },
+    "party_sdlp": {
+        "housing":     1,
+        "education":   1,
+        "language":    2,
+        "environment": 1,
+        "health":      1,
+        "equality":    2,
+        "economy":     0,
+        "welfare":     1,
+        "integration": 2,
+        "justice":     2
+    },
+    "party_pbp": {
+        "housing":     2,
+        "education":   2,
+        "language":    1,
+        "environment": 2,
+        "health":      2,
+        "equality":    2,
+        "economy":    -2,
+        "welfare":     2,
+        "integration": 1,
+        "justice":     2
+    },
+    "party_tuv": {
+        "housing":    -1,
+        "education":  -2,
+        "language":   -2,
+        "environment":-1,
+        "health":     -1,
+        "equality":   -2,
+        "economy":     2,
+        "welfare":    -1,
+        "integration":-2,
+        "justice":    -2
+    }
+}

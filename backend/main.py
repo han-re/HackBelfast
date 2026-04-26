@@ -8,6 +8,9 @@ load_dotenv()
 
 app = FastAPI()
 
+from routers.quiz_router import router as quiz_router
+app.include_router(quiz_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

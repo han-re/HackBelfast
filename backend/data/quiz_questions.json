@@ -1,0 +1,62 @@
+[
+    {
+        "id": "q1",
+        "axis": "housing",
+        "question": "Private rents should be capped as a percentage of tenant income.",
+        "axis_label": "Housing intervention"
+    },
+    {
+        "id": "q2",
+        "axis": "education",
+        "question": "Academic selection at age 11 should be abolished.",
+        "axis_label": "Education reform"
+    },
+    {
+        "id": "q3",
+        "axis": "language",
+        "question": "Irish should have equal legal status to English in NI.",
+        "axis_label": "Language and identity"
+    },
+    {
+        "id": "q4",
+        "axis": "environment",
+        "question": "NI should commit to net zero by 2035, not 2050.",
+        "axis_label": "Climate ambition"
+    },
+    {
+        "id": "q5",
+        "axis": "health",
+        "question": "Private companies should be removed from delivering NHS services.",
+        "axis_label": "Health privatisation"
+    },
+    {
+        "id": "q6",
+        "axis": "equality",
+        "question": "A standalone Hate Crime Bill should be passed without delay.",
+        "axis_label": "Equality legislation"
+    },
+    {
+        "id": "q7",
+        "axis": "economy",
+        "question": "Corporation tax in NI should be cut below the UK rate.",
+        "axis_label": "Economic policy"
+    },
+    {
+        "id": "q8",
+        "axis": "welfare",
+        "question": "Welfare cuts should be mitigated locally regardless of cost.",
+        "axis_label": "Welfare protection"
+    },
+    {
+        "id": "q9",
+        "axis": "integration",
+        "question": "Cross-border cooperation with Ireland should be deepened.",
+        "axis_label": "All-island integration"
+    },
+    {
+        "id": "q10",
+        "axis": "justice",
+        "question": "Legacy cases from the Troubles should be reopened, not closed.",
+        "axis_label": "Legacy and justice"
+    }
+]
