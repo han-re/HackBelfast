@@ -62,16 +62,21 @@ def health():
 
 # ------------------------------------------------------------------ parties
 
+def _parties_col(db):
+    """Atlas has the collection as 'Parties' (capital P); fall back to lowercase."""
+    return db["Parties"]
+
+
 @app.get("/parties")
 async def get_parties():
     db = get_db()
-    return await db["parties"].find({}).to_list(None)
+    return await _parties_col(db).find({}).to_list(None)
 
 
 @app.get("/party/{party_id}")
 async def get_party(party_id: str):
     db = get_db()
-    party = await db["parties"].find_one({"_id": party_id})
+    party = await _parties_col(db).find_one({"_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     return party
@@ -81,6 +86,19 @@ async def get_party(party_id: str):
 async def get_party_mlas(party_id: str):
     db = get_db()
     return await db["mlas"].find({"party_id": party_id}).to_list(None)
+
+
+@app.post("/admin/seed-mlas")
+async def seed_mlas():
+    """One-shot: seeds the 14 MLAs into db.mlas. Call once then ignore."""
+    from seed.seed_real_mlas import MLAS
+    db = get_db()
+    seeded = []
+    for mla in MLAS:
+        await db["mlas"].replace_one({"_id": mla["_id"]}, mla, upsert=True)
+        seeded.append(mla["_id"])
+    count = await db["mlas"].count_documents({})
+    return {"seeded": seeded, "total_in_db": count}
 
 
 # --------------------------------------------------------------------- MLAs
