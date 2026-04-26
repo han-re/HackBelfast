@@ -1,2 +1,9 @@
 fastapi
 uvicorn[standard]
+motor
+pymongo>=4.9
+python-dotenv
+solders
+solana
+base58
+httpx
