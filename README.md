@@ -1,8 +1,8 @@
-# Mandate
+# VoteWise
 
 **Vote for the policy, not the tribe.**
 
-Northern Ireland has 90 MLAs making decisions on housing, health, and education — but most people vote based on identity, not policy. Mandate breaks that pattern. Take a 90-second quiz, get a data-driven alignment score against every party's actual Assembly voting record, and find out who really represents you.
+Northern Ireland has 90 MLAs making decisions on housing, health, and education — but most people vote based on identity, not policy. VoteWise breaks that pattern. Take a 90-second quiz, get a data-driven alignment score against every party's actual Assembly voting record, and find out who really represents you.
 
 Built at HackBelfast 2026.
 
@@ -180,7 +180,7 @@ MLA scores use their individual vote record per axis, falling back to their part
 3. Hash written to Solana devnet via the Memo program
 4. `chain_state` record stored in MongoDB with hash and tx signature
 
-**Verify Now** recomputes the hash client-side using the Web Crypto API and diffs it against the stored hash. No trust in Mandate's servers required. If the database is altered after stamping, verification fails publicly.
+**Verify Now** recomputes the hash client-side using the Web Crypto API and diffs it against the stored hash. No trust in VoteWise's servers required. If the database is altered after stamping, verification fails publicly.
 
 ---
 
