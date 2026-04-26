@@ -88,9 +88,22 @@ async def get_party_mlas(party_id: str):
     return await db["mlas"].find({"party_id": party_id}).to_list(None)
 
 
+@app.post("/admin/seed-parties")
+async def seed_parties():
+    """One-shot: seeds the 7 real NI parties into db.Parties."""
+    from seed.seed_real_parties import PARTIES
+    db = get_db()
+    seeded = []
+    for party in PARTIES:
+        await _parties_col(db).replace_one({"_id": party["_id"]}, party, upsert=True)
+        seeded.append(party["_id"])
+    count = await _parties_col(db).count_documents({})
+    return {"seeded": seeded, "total_in_db": count}
+
+
 @app.post("/admin/seed-mlas")
 async def seed_mlas():
-    """One-shot: seeds the 14 MLAs into db.mlas. Call once then ignore."""
+    """One-shot: seeds the 14 MLAs into db.mlas."""
     from seed.seed_real_mlas import MLAS
     db = get_db()
     seeded = []
