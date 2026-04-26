@@ -52,9 +52,14 @@ async function sha256(str: string): Promise<string> {
 }
 
 async function hashProfile(data: object): Promise<string> {
-  // JSON.stringify with no spaces matches Python's separators=(',',':')
-  const canonical = JSON.stringify(sortKeysDeep(data));
-  return sha256(canonical);
+  // JSON.stringify with no spaces matches Python's separators=(',',':').
+  // Python's json.dumps escapes non-ASCII as \uXXXX (ensure_ascii=True default).
+  // We must do the same so the hash matches what was stamped on-chain.
+  const raw = JSON.stringify(sortKeysDeep(data));
+  const escaped = raw.replace(/[-￿]/g, (c) =>
+    "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0")
+  );
+  return sha256(escaped);
 }
 
 function HashPill({ hash }: { hash: string }) {
