@@ -11,9 +11,6 @@ app = FastAPI()
 from routers.quiz_router import router as quiz_router
 app.include_router(quiz_router)
 
-# TODO: uncomment once Ryan's routers/quiz_router.py exists on disk.
-# from routers.quiz_router import router as quiz_router
-# app.include_router(quiz_router)
 
 app.add_middleware(
     CORSMiddleware,
