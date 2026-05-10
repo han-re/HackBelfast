@@ -8,6 +8,17 @@
   --vw-accent:  #e8962a;
   --vw-glow:    #b4cfe8;
 
+  /* ── VoteWise Pro tokens (analytics dashboard) ──
+     Cyan is the analytical-affordance accent: sortable column headers,
+     filter chips, links into data drill-downs. Amber --vw-accent stays
+     the primary-CTA colour for Save / Export / Subscribe actions, so the
+     two surfaces share a brand but read differently at a glance. */
+  --vw-pro-cyan:      #7dd3fc;
+  --vw-pro-cyan-dim:  rgba(125,211,252,0.18);
+  --vw-pro-grid:      rgba(180,207,232,0.05);
+  --vw-pro-surface:   rgba(11,20,38,0.94);
+  --vw-pro-mono:      ui-monospace, "JetBrains Mono", "SF Mono", Consolas, monospace;
+
   /* keep Tailwind compat */
   --background: #080e1a;
   --foreground:  #cddcec;
