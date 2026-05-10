@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ProSidebar } from "./ProSidebar";
 import { ProTopBar } from "./ProTopBar";
+import { ProDataQualityFooter } from "./ProDataQualityFooter";
 import { ProPageProvider } from "./ProPageContext";
 
 const NARROW_BREAKPOINT_PX = 900;
@@ -41,6 +42,7 @@ export function ProShell({ children }: { children: ReactNode }) {
         >
           <ProTopBar />
           <main style={{ flex: 1, padding: "28px 32px 48px" }}>{children}</main>
+          <ProDataQualityFooter />
         </div>
       </div>
     </ProPageProvider>

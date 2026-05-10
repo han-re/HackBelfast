@@ -1,55 +1,12 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import { useProPage } from "./ProPageContext";
-
-interface ProHealth {
-  last_donations_seeded_at: string | null;
-  last_spending_seeded_at: string | null;
-  last_sessions_seeded_at: string | null;
-}
-
-function formatRelative(iso: string | null): string {
-  if (!iso) return "never";
-  const ts = Date.parse(iso);
-  if (isNaN(ts)) return "never";
-  const ageMs = Date.now() - ts;
-  const minutes = Math.floor(ageMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
-  const days = Math.floor(hours / 24);
-  return `${days} day${days === 1 ? "" : "s"} ago`;
-}
+import { newestSeedStamp, formatRelative } from "./freshness";
 
 export function ProTopBar() {
-  const { meta } = useProPage();
-  const [freshness, setFreshness] = useState<string>("");
-
-  useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-    fetch(`${base}/pro/health`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((h: ProHealth | null) => {
-        if (!h) return;
-        // Use the most recently-touched of the three seeds as the headline
-        // freshness — a journalist cares whether the page they're looking
-        // at is fresh, and all three feed the same surface.
-        const stamps = [
-          h.last_donations_seeded_at,
-          h.last_spending_seeded_at,
-          h.last_sessions_seeded_at,
-        ].filter((s): s is string => Boolean(s));
-        if (stamps.length === 0) {
-          setFreshness("never");
-          return;
-        }
-        const newest = stamps.sort().reverse()[0];
-        setFreshness(formatRelative(newest));
-      })
-      .catch(() => setFreshness("unknown"));
-  }, []);
+  const { meta, health } = useProPage();
+  const freshness = formatRelative(newestSeedStamp(health));
 
   const barStyle: CSSProperties = {
     position: "sticky",
