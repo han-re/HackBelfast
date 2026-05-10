@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
-/* ── Mandate design tokens ── */
+/* ── VoteWise design tokens ── */
 :root {
-  --m-dark:    #080e1a;
-  --m-card-bg: rgba(11,20,38,0.82);
-  --m-border:  rgba(180,207,232,0.11);
-  --m-accent:  #e8962a;
-  --m-glow:    #b4cfe8;
+  --vw-dark:    #080e1a;
+  --vw-card-bg: rgba(11,20,38,0.82);
+  --vw-border:  rgba(180,207,232,0.11);
+  --vw-accent:  #e8962a;
+  --vw-glow:    #b4cfe8;
 
   /* keep Tailwind compat */
   --background: #080e1a;
@@ -26,7 +26,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--m-dark);
+  background: var(--vw-dark);
   color: #cddcec;
   font-family: 'Segoe UI', system-ui, sans-serif;
   overflow-x: hidden;
