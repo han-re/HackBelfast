@@ -329,7 +329,7 @@ export default function QuizPage() {
           })}
         </div>
 
-        {/* Mandate tagline — mirrors the legal/branding footer in index.html */}
+        {/* VoteWise tagline — mirrors the legal/branding footer in index.html */}
         <p
           style={{
             fontSize: "0.66rem",
