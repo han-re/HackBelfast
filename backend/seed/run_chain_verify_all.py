@@ -14,7 +14,7 @@ load_dotenv()
 async def main() -> None:
     uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
     client = AsyncIOMotorClient(uri)
-    db = client["mandatewatch"]
+    db = client["votewise"]
 
     from services.solana_service import verify_profile_on_chain
 

@@ -32,7 +32,7 @@ def get_db():
     if _mongo_client is None:
         uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
         _mongo_client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=3000)
-    return _mongo_client["mandatewatch"]
+    return _mongo_client["votewise"]
 
 
 async def _get_chain_record(politician_id: str) -> dict | None:
