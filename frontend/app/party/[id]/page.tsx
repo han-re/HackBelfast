@@ -95,7 +95,7 @@ function MlaCard({ mla, partyColor, delay }: { mla: Mla; partyColor: string; del
   return (
     <Link
       href={`/mla/${mla._id}`}
-      className="mandate-question-enter"
+      className="votewise-question-enter"
       style={{
         animationDelay: `${delay}s`,
         ...cardStyle({

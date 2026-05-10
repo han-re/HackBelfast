@@ -141,7 +141,7 @@ export default function ResultsPage() {
               lineHeight: 1.1,
               color: topMeta.color,
               textShadow: `0 0 80px ${topMeta.color}77, 0 0 30px ${topMeta.color}44, 0 3px 0 rgba(0,0,0,1), 0 6px 20px rgba(0,0,0,1)`,
-              animation: "mandateAmberPulse 4s ease-in-out 0.5s infinite both",
+              animation: "votewiseAmberPulse 4s ease-in-out 0.5s infinite both",
               marginBottom: "0.8rem",
             }}
           >
@@ -331,7 +331,7 @@ function MlaCard({ mla, meta, delay }: { mla: MlaScore; meta: { color: string; s
   return (
     <a
       href={`/mla/${mla.mla_id}`}
-      className="mandate-question-enter"
+      className="votewise-question-enter"
       style={{
         animationDelay: `${delay}s`,
         ...cardStyle(),

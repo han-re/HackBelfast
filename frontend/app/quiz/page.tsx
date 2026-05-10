@@ -108,7 +108,7 @@ export default function QuizPage() {
           width: `${progressPct}%`,
           background: "linear-gradient(90deg, #e8962a, #b4cfe8, #e8962a)",
           backgroundSize: "200% 100%",
-          animation: "mandateShimmerBar 3s linear infinite",
+          animation: "votewiseShimmerBar 3s linear infinite",
           transition: "width 0.45s cubic-bezier(0.16,1,0.3,1)",
         }}
       />
@@ -156,7 +156,7 @@ export default function QuizPage() {
         {/* Question card — key forces remount on each new question so animation re-fires */}
         <div
           key={`question-${index}`}
-          className={isExiting ? "mandate-question-exit" : "mandate-question-enter"}
+          className={isExiting ? "votewise-question-exit" : "votewise-question-enter"}
           style={{
             width: "100%",
             background: "rgba(11,20,38,0.82)",
@@ -252,7 +252,7 @@ export default function QuizPage() {
                 key={opt.value}
                 onClick={() => pick(opt.value)}
                 disabled={selected !== null}
-                className="mandate-answer-btn"
+                className="votewise-answer-btn"
                 style={
                   {
                     "--btn-color": opt.color,
@@ -281,7 +281,7 @@ export default function QuizPage() {
               >
                 {/* Top colour stripe — exact copy of party card ::before */}
                 <div
-                  className="mandate-btn-stripe"
+                  className="votewise-btn-stripe"
                   style={{
                     position: "absolute",
                     top: 0, left: 0, right: 0,
@@ -295,7 +295,7 @@ export default function QuizPage() {
 
                 {/* Abbreviation */}
                 <span
-                  className="mandate-btn-short"
+                  className="votewise-btn-short"
                   style={{
                     fontSize: "1.05rem",
                     fontWeight: 900,
