@@ -29,8 +29,8 @@ interface Props {
 }
 
 const TRACKER_CARD: CSSProperties = {
-  background: "rgba(11,20,38,0.82)",
-  border: "1px solid rgba(180,207,232,0.11)",
+  background: "var(--vw-card-bg)",
+  border: "1px solid var(--vw-border)",
   borderRadius: "12px",
   backdropFilter: "blur(12px)",
   WebkitBackdropFilter: "blur(12px)",
@@ -203,7 +203,7 @@ function VerifyResult({
 
   if (status === "error") {
     return (
-      <div style={{ border: "1px solid rgba(180,207,232,0.12)", background: "rgba(180,207,232,0.05)", borderRadius: "8px", padding: "1rem", color: GREEN_TEXT, fontSize: "0.95rem" }}>
+      <div style={{ border: "1px solid rgba(180,207,232,0.12)", background: "var(--vw-pro-grid)", borderRadius: "8px", padding: "1rem", color: GREEN_TEXT, fontSize: "0.95rem" }}>
         Could not verify this record. Check the backend connection and try again.
       </div>
     );
@@ -393,7 +393,7 @@ export default function TrackerVerificationPanel({
           padding: "1.5rem",
         }}
       >
-        <DarkTopStripe color="#b4cfe8" />
+        <DarkTopStripe color="var(--vw-glow)" />
         <h3 style={{ margin: "0 0 0.35rem", color: GREEN_TEXT, fontSize: "1rem", fontWeight: 700 }}>
           Verify data integrity
         </h3>
