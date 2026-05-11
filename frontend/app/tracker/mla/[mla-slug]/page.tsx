@@ -9,7 +9,7 @@ import {
 } from "../../_data";
 import ContributionTimeline from "../../../components/tracker/ContributionTimeline";
 import VoteBreakdown from "../../../components/tracker/VoteBreakdown";
-import ChainPanel from "../../../components/ChainPanel";
+import TrackerVerificationPanel from "../../../components/tracker/TrackerVerificationPanel";
 import VerifiedBadge from "../../../components/VerifiedBadge";
 import type { MlaPledge, VoteRecord, InterestRecord, DonationRecord } from "../../_types";
 
@@ -99,6 +99,51 @@ function SectionLabel({ text }: { text: string }) {
     >
       {text}
     </p>
+  );
+}
+
+function SectionTabs({ color }: { color: string }) {
+  const tabs = [
+    { href: "#verification", label: "Verification" },
+    { href: "#pledges", label: "Pledges" },
+    { href: "#votes", label: "Voting record" },
+    { href: "#interests", label: "Interests" },
+    { href: "#donations", label: "Donations" },
+    { href: "#provenance", label: "Data provenance" },
+  ];
+
+  return (
+    <nav
+      aria-label="MLA tracker sections"
+      style={{
+        display: "flex",
+        gap: "0.25rem",
+        flexWrap: "wrap",
+        marginBottom: "1.6rem",
+        borderBottom: "1px solid rgba(180,207,232,0.07)",
+      }}
+    >
+      {tabs.map((tab, index) => (
+        <a
+          key={tab.href}
+          href={tab.href}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            minHeight: 42,
+            padding: "0.7rem 0.9rem",
+            borderBottom: index === 0 ? `2px solid ${color}` : "2px solid transparent",
+            color: index === 0 ? "#cddcec" : "rgba(180,207,232,0.42)",
+            background: index === 0 ? `${color}14` : "transparent",
+            textDecoration: "none",
+            fontSize: "0.78rem",
+            fontWeight: index === 0 ? 800 : 600,
+          }}
+        >
+          {tab.label}
+        </a>
+      ))}
+    </nav>
   );
 }
 
@@ -401,6 +446,11 @@ export default async function MlaTrackerPage({
   const backedCount = mla.pledges.filter((p) => p.status === "backed").length;
   const partialCount = mla.pledges.filter((p) => p.status === "partial").length;
   const mismatchCount = mla.pledges.filter((p) => p.status === "mismatch").length;
+  const verificationPayload = {
+    record_type: "tracker_mla",
+    mla_id: mla.id,
+    mla,
+  };
 
   return (
     <main>
@@ -544,7 +594,7 @@ export default async function MlaTrackerPage({
                 gap: "0.75rem",
               }}
             >
-              <VerifiedBadge politicianId={mla.id} />
+              <VerifiedBadge politicianId={`tracker_mla_${mla.id}`} />
               <div style={{ ...CARD, padding: "0.75rem 1.1rem", textAlign: "right" }}>
                 <TopStripe color={color} />
                 <div
@@ -569,6 +619,19 @@ export default async function MlaTrackerPage({
               </div>
             </div>
           </div>
+        </section>
+
+        <SectionTabs color={color} />
+
+        {/* Blockchain verification */}
+        <section id="verification" style={{ scrollMarginTop: "5rem", marginBottom: "2.5rem" }}>
+          <SectionLabel text="Blockchain verification" />
+          <TrackerVerificationPanel
+            recordId={`tracker_mla_${mla.id}`}
+            subjectLabel={`${mla.name} tracker profile`}
+            payload={verificationPayload}
+            accentColor={color}
+          />
         </section>
 
         {/* ── Bio ── */}
@@ -630,7 +693,7 @@ export default async function MlaTrackerPage({
         </div>
 
         {/* ── Pledge tracker ── */}
-        <section style={{ marginBottom: "2.5rem" }}>
+        <section id="pledges" style={{ scrollMarginTop: "5rem", marginBottom: "2.5rem" }}>
           <div
             style={{
               display: "flex",
@@ -671,7 +734,7 @@ export default async function MlaTrackerPage({
         </section>
 
         {/* ── Voting record ── */}
-        <section style={{ marginBottom: "2.5rem" }}>
+        <section id="votes" style={{ scrollMarginTop: "5rem", marginBottom: "2.5rem" }}>
           <SectionLabel
             text={`Voting record (${mla.votes.length} tracked divisions)`}
           />
@@ -681,7 +744,7 @@ export default async function MlaTrackerPage({
         </section>
 
         {/* ── Interests ── */}
-        <section style={{ marginBottom: "2.5rem" }}>
+        <section id="interests" style={{ scrollMarginTop: "5rem", marginBottom: "2.5rem" }}>
           <SectionLabel text="Declared interests" />
           {mla.interests.length > 0 ? (
             <div style={{ ...CARD, overflow: "auto" }}>
@@ -775,7 +838,7 @@ export default async function MlaTrackerPage({
         </section>
 
         {/* ── Donations ── */}
-        <section style={{ marginBottom: "2.5rem" }}>
+        <section id="donations" style={{ scrollMarginTop: "5rem", marginBottom: "2.5rem" }}>
           <SectionLabel text="Reported donations" />
           {mla.donations.length > 0 ? (
             <div style={{ ...CARD, overflow: "auto" }}>
@@ -887,14 +950,8 @@ export default async function MlaTrackerPage({
           </p>
         </section>
 
-        {/* ── Blockchain verification ── */}
-        <section style={{ marginBottom: "2.5rem" }}>
-          <SectionLabel text="Blockchain verification" />
-          <ChainPanel politicianId={mla.id} />
-        </section>
-
         {/* ── Data provenance ── */}
-        <section>
+        <section id="provenance" style={{ scrollMarginTop: "5rem" }}>
           <SectionLabel text="Data provenance" />
           <div style={{ ...CARD, padding: "1.2rem 1.5rem" }}>
             <TopStripe color="rgba(180,207,232,0.25)" />

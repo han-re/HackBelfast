@@ -23,7 +23,6 @@ export function SessionDetail({ slug, extended, moments }: Props) {
 
   return (
     <div style={{ padding: "2rem 2.2rem 2.6rem" }}>
-
       {/* Ask the transcript button */}
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "2rem" }}>
         <button

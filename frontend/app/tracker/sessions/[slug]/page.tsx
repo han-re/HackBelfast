@@ -7,6 +7,7 @@ import {
   listSessionSlugs,
 } from "../../_data";
 import { SessionDetail } from "./SessionDetail";
+import { SessionVerificationDropdown } from "./SessionVerificationDropdown";
 import type { ExtendedSummary, NotableMoment } from "../../_types";
 
 interface Props {
@@ -66,6 +67,12 @@ export default async function SessionPage({ params }: Props) {
   const typeLabel = SESSION_TYPE_LABEL[summary.session_type] ?? summary.session_type;
   const extended = normaliseExtended(summary.extended_summary as ExtendedSummary | string);
   const moments = normaliseNotableMoments(summary.notable_moments as NotableMoment[] | string[]);
+  const verificationPayload = {
+    record_type: "tracker_session",
+    slug,
+    summary,
+    metadata: meta,
+  };
   const date = new Date(summary.date).toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
@@ -128,9 +135,9 @@ export default async function SessionPage({ params }: Props) {
           {summary.card_summary}
         </h1>
 
-        {/* Topic tags */}
-        {summary.key_topics.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "2rem" }}>
+        {/* Topic tags and verification */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.75rem", marginBottom: "2rem" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", minWidth: 0 }}>
             {summary.key_topics.map((t) => (
               <span
                 key={t}
@@ -150,7 +157,8 @@ export default async function SessionPage({ params }: Props) {
               </span>
             ))}
           </div>
-        )}
+          <SessionVerificationDropdown slug={slug} payload={verificationPayload} />
+        </div>
 
         {/* At-a-glance row */}
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
